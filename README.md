@@ -1,5 +1,9 @@
 # DownIt
-Asynchronous downloads manager.
+Asynchronous downloads manager library for Nim.
+
+```
+nimble install downit
+```
 
 ## Usage
 The `Downloader` object holds all the downloads data, `initDownloader` takes the root directory for all the downloads (or `""` if none) and the poll timeout (by default 1 ms).  
@@ -20,7 +24,7 @@ while true:
     echo readFile(downloader.getPath("strutils").get())
     echo readFile(downloader.getPath("strformat").get())
     break
-  elif downloader.getError("os").isSome:
+  elif downloader.getError("os").isSome: # You can also do downloader.getState("os").get() == DownloadError
     raise downloader.getError("os").get
 ```
 Remember to compile with `-d:ssl`.

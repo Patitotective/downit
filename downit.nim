@@ -131,4 +131,4 @@ proc update*(self: var Downloader) =
       elif self.getPath(name).get().fileExists():
         self.downTable[name].state = Downloaded
 
-      self.download[name].client.close()
+      self.downTable[name].client.close()
