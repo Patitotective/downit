@@ -71,7 +71,11 @@ window.addEventListener('DOMContentLoaded', main);
   <div class="container">
     <h1 class="title">Index</h1>
     Modules: <a href="downit.html">downit</a>.<br/><p /><h2>API symbols</h2>
-<dl><dt><a name="download" href="#download"><span>download:</span></a></dt><dd><ul class="simple">
+<dl><dt><a name="Download" href="#Download"><span>Download:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="downit: Download" href="downit.html#Download">downit: Download</a></li>
+          </ul></dd>
+<dt><a name="download" href="#download"><span>download:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="downit: download(self: var Downloader; url, path: string; name = &quot;&quot;; replace = false)" href="downit.html#download%2CDownloader%2Cstring%2Cstring%2Cstring">downit: download(self: var Downloader; url, path: string; name = &quot;&quot;; replace = false)</a></li>
           </ul></dd>
@@ -81,7 +85,7 @@ window.addEventListener('DOMContentLoaded', main);
           </ul></dd>
 <dt><a name="Downloaded" href="#Downloaded"><span>Downloaded:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="DownState.Downloaded" href="downit.html#Downloaded">DownState.Downloaded</a></li>
+          data-doc-search-tag="DownloadState.Downloaded" href="downit.html#Downloaded">DownloadState.Downloaded</a></li>
           </ul></dd>
 <dt><a name="downloaded" href="#downloaded"><span>downloaded:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -93,23 +97,29 @@ window.addEventListener('DOMContentLoaded', main);
           </ul></dd>
 <dt><a name="DownloadError" href="#DownloadError"><span>DownloadError:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="DownState.DownloadError" href="downit.html#DownloadError">DownState.DownloadError</a></li>
+          data-doc-search-tag="DownloadState.DownloadError" href="downit.html#DownloadError">DownloadState.DownloadError</a></li>
           </ul></dd>
 <dt><a name="Downloading" href="#Downloading"><span>Downloading:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="DownState.Downloading" href="downit.html#Downloading">DownState.Downloading</a></li>
+          data-doc-search-tag="DownloadState.Downloading" href="downit.html#Downloading">DownloadState.Downloading</a></li>
           </ul></dd>
 <dt><a name="downloading" href="#downloading"><span>downloading:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="downit: downloading(self: Downloader; name: string): bool" href="downit.html#downloading%2CDownloader%2Cstring">downit: downloading(self: Downloader; name: string): bool</a></li>
           </ul></dd>
-<dt><a name="DownState" href="#DownState"><span>DownState:</span></a></dt><dd><ul class="simple">
+<dt><a name="DownloadState" href="#DownloadState"><span>DownloadState:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="downit: DownState" href="downit.html#DownState">downit: DownState</a></li>
+          data-doc-search-tag="downit: DownloadState" href="downit.html#DownloadState">downit: DownloadState</a></li>
           </ul></dd>
 <dt><a name="exists" href="#exists"><span>exists:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="downit: exists(self: Downloader; name: string): bool" href="downit.html#exists%2CDownloader%2Cstring">downit: exists(self: Downloader; name: string): bool</a></li>
+          </ul></dd>
+<dt><a name="get" href="#get"><span>get:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="downit: get(self: Downloader; name: string): Option[
+    tuple[url, path: string, error: ref Exception, state: DownloadState]]" href="downit.html#get%2CDownloader%2Cstring">downit: get(self: Downloader; name: string): Option[
+    tuple[url, path: string, error: ref Exception, state: DownloadState]]</a></li>
           </ul></dd>
 <dt><a name="getError" href="#getError"><span>getError:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -125,7 +135,7 @@ window.addEventListener('DOMContentLoaded', main);
           </ul></dd>
 <dt><a name="getState" href="#getState"><span>getState:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="downit: getState(self: Downloader; name: string): Option[DownState]" href="downit.html#getState%2CDownloader%2Cstring">downit: getState(self: Downloader; name: string): Option[DownState]</a></li>
+          data-doc-search-tag="downit: getState(self: Downloader; name: string): Option[DownloadState]" href="downit.html#getState%2CDownloader%2Cstring">downit: getState(self: Downloader; name: string): Option[DownloadState]</a></li>
           </ul></dd>
 <dt><a name="getURL" href="#getURL"><span>getURL:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -137,7 +147,7 @@ window.addEventListener('DOMContentLoaded', main);
           </ul></dd>
 <dt><a name="NotDownloaded" href="#NotDownloaded"><span>NotDownloaded:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="DownState.NotDownloaded" href="downit.html#NotDownloaded">DownState.NotDownloaded</a></li>
+          data-doc-search-tag="DownloadState.NotDownloaded" href="downit.html#NotDownloaded">DownloadState.NotDownloaded</a></li>
           </ul></dd>
 <dt><a name="remove" href="#remove"><span>remove:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -152,7 +162,7 @@ window.addEventListener('DOMContentLoaded', main);
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br/>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2022-06-16 01:43:08 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2022-06-16 02:01:46 UTC</small>
       </div>
     </div>
   </div>

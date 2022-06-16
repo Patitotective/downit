@@ -101,15 +101,21 @@ window.addEventListener('DOMContentLoaded', main);
 <li>
   <a class="reference reference-toplevel" href="#7" id="57">Types</a>
   <ul class="simple simple-toc-section">
-      <li><a class="reference" href="#Downloader"
+      <li><a class="reference" href="#Download"
+    title="Download = object
+  url*, path*: string
+  error*: ref Exception
+  state*: DownloadState
+  client*: AsyncHttpClient
+  future*: Future[void]">Download</a></li>
+  <li><a class="reference" href="#Downloader"
     title="Downloader = object
   dir*: string               ## Root directory for all downloads
   timeout*: int              ## Poll events timeout
-  downTable: Table[string, tuple[url, path: string, error: ref Exception,
-                                 state: DownState, fut: Future[void]]]">Downloader</a></li>
-  <li><a class="reference" href="#DownState"
-    title="DownState = enum
-  NotDownloaded, Downloading, Downloaded, DownloadError">DownState</a></li>
+  downTable: Table[string, Download]">Downloader</a></li>
+  <li><a class="reference" href="#DownloadState"
+    title="DownloadState = enum
+  NotDownloaded, Downloading, Downloaded, DownloadError">DownloadState</a></li>
 
   </ul>
 </li>
@@ -141,6 +147,13 @@ window.addEventListener('DOMContentLoaded', main);
     title="exists(self: Downloader; name: string): bool">exists(self: Downloader; name: string): bool</a></li>
 
   </ul>
+  <ul class="simple nested-toc-section">get
+      <li><a class="reference" href="#get%2CDownloader%2Cstring"
+    title="get(self: Downloader; name: string): Option[
+    tuple[url, path: string, error: ref Exception, state: DownloadState]]">get(self: Downloader; name: string): Option[
+    tuple[url, path: string, error: ref Exception, state: DownloadState]]</a></li>
+
+  </ul>
   <ul class="simple nested-toc-section">getError
       <li><a class="reference" href="#getError%2CDownloader%2Cstring"
     title="getError(self: Downloader; name: string): Option[ref Exception]">getError(self: Downloader; name: string): Option[ref Exception]</a></li>
@@ -158,7 +171,7 @@ window.addEventListener('DOMContentLoaded', main);
   </ul>
   <ul class="simple nested-toc-section">getState
       <li><a class="reference" href="#getState%2CDownloader%2Cstring"
-    title="getState(self: Downloader; name: string): Option[DownState]">getState(self: Downloader; name: string): Option[DownState]</a></li>
+    title="getState(self: Downloader; name: string): Option[DownloadState]">getState(self: Downloader; name: string): Option[DownloadState]</a></li>
 
   </ul>
   <ul class="simple nested-toc-section">getURL
@@ -218,12 +231,13 @@ class="link-seesrc" target="_blank">Source</a>
   <div class="section" id="7">
 <h1><a class="toc-backref" href="#7">Types</a></h1>
 <dl class="item">
-<div id="Downloader">
-<dt><pre><a href="downit.html#Downloader"><span class="Identifier">Downloader</span></a> <span class="Other">=</span> <span class="Keyword">object</span>
-  <span class="Identifier">dir</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">string</span>               <span class="Comment">## Root directory for all downloads</span>
-  <span class="Identifier">timeout</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">int</span>              <span class="Comment">## Poll events timeout</span>
-  <span class="Identifier">downTable</span><span class="Other">:</span> <span class="Identifier">Table</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">,</span> <span class="Keyword">tuple</span><span class="Other">[</span><span class="Identifier">url</span><span class="Other">,</span> <span class="Identifier">path</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">,</span> <span class="Identifier">error</span><span class="Other">:</span> <span class="Keyword">ref</span> <span class="Identifier">Exception</span><span class="Other">,</span>
-                                 <span class="Identifier">state</span><span class="Other">:</span> <a href="downit.html#DownState"><span class="Identifier">DownState</span></a><span class="Other">,</span> <span class="Identifier">fut</span><span class="Other">:</span> <span class="Identifier">Future</span><span class="Other">[</span><span class="Identifier">void</span><span class="Other">]</span><span class="Other">]</span><span class="Other">]</span>
+<div id="Download">
+<dt><pre><a href="downit.html#Download"><span class="Identifier">Download</span></a> <span class="Other">=</span> <span class="Keyword">object</span>
+  <span class="Identifier">url</span><span class="Operator">*</span><span class="Other">,</span> <span class="Identifier">path</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">string</span>
+  <span class="Identifier">error</span><span class="Operator">*</span><span class="Other">:</span> <span class="Keyword">ref</span> <span class="Identifier">Exception</span>
+  <span class="Identifier">state</span><span class="Operator">*</span><span class="Other">:</span> <a href="downit.html#DownloadState"><span class="Identifier">DownloadState</span></a>
+  <span class="Identifier">client</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">AsyncHttpClient</span>
+  <span class="Identifier">future</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">Future</span><span class="Other">[</span><span class="Identifier">void</span><span class="Other">]</span>
 </pre></dt>
 <dd>
 
@@ -235,8 +249,24 @@ class="link-seesrc" target="_blank">Source</a>
 
 </dd>
 </div>
-<div id="DownState">
-<dt><pre><a href="downit.html#DownState"><span class="Identifier">DownState</span></a> <span class="Other">=</span> <span class="Keyword">enum</span>
+<div id="Downloader">
+<dt><pre><a href="downit.html#Downloader"><span class="Identifier">Downloader</span></a> <span class="Other">=</span> <span class="Keyword">object</span>
+  <span class="Identifier">dir</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">string</span>               <span class="Comment">## Root directory for all downloads</span>
+  <span class="Identifier">timeout</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">int</span>              <span class="Comment">## Poll events timeout</span>
+  <span class="Identifier">downTable</span><span class="Other">:</span> <span class="Identifier">Table</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">,</span> <a href="downit.html#Download"><span class="Identifier">Download</span></a><span class="Other">]</span>
+</pre></dt>
+<dd>
+
+
+&nbsp;&nbsp;<a
+href="https://github.com/Patitotective/downit/tree/main/downit.nim#L38"
+class="link-seesrc" target="_blank">Source</a>
+&nbsp;&nbsp;<a href="https://github.com/Patitotective/downit/edit/devel/downit.nim#L38" class="link-seesrc" target="_blank" >Edit</a>
+
+</dd>
+</div>
+<div id="DownloadState">
+<dt><pre><a href="downit.html#DownloadState"><span class="Identifier">DownloadState</span></a> <span class="Other">=</span> <span class="Keyword">enum</span>
   <span class="Identifier">NotDownloaded</span><span class="Other">,</span> <span class="Identifier">Downloading</span><span class="Other">,</span> <span class="Identifier">Downloaded</span><span class="Other">,</span> <span class="Identifier">DownloadError</span></pre></dt>
 <dd>
 
@@ -257,29 +287,29 @@ class="link-seesrc" target="_blank">Source</a>
 <dt><pre><span class="Keyword">proc</span> <a href="#download%2CDownloader%2Cstring%2Cstring%2Cstring"><span class="Identifier">download</span></a><span class="Other">(</span><span class="Identifier">self</span><span class="Other">:</span> <span class="Keyword">var</span> <a href="downit.html#Downloader"><span class="Identifier">Downloader</span></a><span class="Other">;</span> <span class="Identifier">url</span><span class="Other">,</span> <span class="Identifier">path</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">name</span> <span class="Other">=</span> <span class="StringLit">&quot;&quot;</span><span class="Other">;</span>
               <span class="Identifier">replace</span> <span class="Other">=</span> <span class="Identifier">false</span><span class="Other">)</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">KeyError</span><span class="Other">,</span> <span class="Identifier">OSError</span><span class="Other">,</span> <span class="Identifier">IOError</span><span class="Other">,</span> <span class="Identifier">Exception</span><span class="Other">,</span>
     <span class="Identifier">LibraryError</span><span class="Other">,</span> <span class="Identifier">SslError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">ReadDirEffect</span><span class="Other">,</span> <span class="Identifier">WriteDirEffect</span><span class="Other">,</span> <span class="Identifier">RootEffect</span><span class="Other">,</span>
-                                    <span class="Identifier">TimeEffect</span><span class="Other">,</span> <span class="Identifier">ReadIOEffect</span><span class="Other">,</span> <span class="Identifier">ReadEnvEffect</span><span class="Other">]</span></span>.}</pre></dt>
+                                    <span class="Identifier">ReadEnvEffect</span><span class="Other">,</span> <span class="Identifier">TimeEffect</span><span class="Other">,</span> <span class="Identifier">ReadIOEffect</span><span class="Other">]</span></span>.}</pre></dt>
 <dd>
 
 Starts an asynchronous download of <tt class="docutils literal"><span class="pre"><span class="Identifier">url</span></span></tt> to <tt class="docutils literal"><span class="pre"><span class="Identifier">path</span></span></tt>. <tt class="docutils literal"><span class="pre"><span class="Identifier">path</span></span></tt> will be used as the name if <tt class="docutils literal"><span class="pre"><span class="Identifier">name</span></span></tt> is empty. If <tt class="docutils literal"><span class="pre"><span class="Identifier">replace</span></span></tt> is set to true and the file is downloaded overwrite it, otherwise if the file is downloaded and <tt class="docutils literal"><span class="pre"><span class="Identifier">replace</span></span></tt> is false do nothing. 
 &nbsp;&nbsp;<a
-href="https://github.com/Patitotective/downit/tree/main/downit.nim#L90"
+href="https://github.com/Patitotective/downit/tree/main/downit.nim#L105"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/Patitotective/downit/edit/devel/downit.nim#L90" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/Patitotective/downit/edit/devel/downit.nim#L105" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
 <div id="downloadAgain,Downloader,string">
 <dt><pre><span class="Keyword">proc</span> <a href="#downloadAgain%2CDownloader%2Cstring"><span class="Identifier">downloadAgain</span></a><span class="Other">(</span><span class="Identifier">self</span><span class="Other">:</span> <span class="Keyword">var</span> <a href="downit.html#Downloader"><span class="Identifier">Downloader</span></a><span class="Other">;</span> <span class="Identifier">name</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">)</span> {.
     <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">KeyError</span><span class="Other">,</span> <span class="Identifier">OSError</span><span class="Other">,</span> <span class="Identifier">IOError</span><span class="Other">,</span> <span class="Identifier">Exception</span><span class="Other">,</span> <span class="Identifier">LibraryError</span><span class="Other">,</span> <span class="Identifier">SslError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span>
-    <span class="Identifier">ReadDirEffect</span><span class="Other">,</span> <span class="Identifier">WriteDirEffect</span><span class="Other">,</span> <span class="Identifier">RootEffect</span><span class="Other">,</span> <span class="Identifier">TimeEffect</span><span class="Other">,</span> <span class="Identifier">ReadIOEffect</span><span class="Other">,</span>
-    <span class="Identifier">ReadEnvEffect</span><span class="Other">]</span></span>.}</pre></dt>
+    <span class="Identifier">ReadDirEffect</span><span class="Other">,</span> <span class="Identifier">WriteDirEffect</span><span class="Other">,</span> <span class="Identifier">RootEffect</span><span class="Other">,</span> <span class="Identifier">ReadEnvEffect</span><span class="Other">,</span> <span class="Identifier">TimeEffect</span><span class="Other">,</span>
+    <span class="Identifier">ReadIOEffect</span><span class="Other">]</span></span>.}</pre></dt>
 <dd>
 
-Downloads <tt class="docutils literal"><span class="pre"><span class="Identifier">name</span></span></tt> again if exists, does nothing otherwise.
+Downloads <tt class="docutils literal"><span class="pre"><span class="Identifier">name</span></span></tt> again if it exists, does nothing otherwise.
 &nbsp;&nbsp;<a
-href="https://github.com/Patitotective/downit/tree/main/downit.nim#L100"
+href="https://github.com/Patitotective/downit/tree/main/downit.nim#L116"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/Patitotective/downit/edit/devel/downit.nim#L100" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/Patitotective/downit/edit/devel/downit.nim#L116" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -290,9 +320,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 Returns true if <tt class="docutils literal"><span class="pre"><span class="Identifier">name</span></span></tt> is downloaded AND the path exists.
 &nbsp;&nbsp;<a
-href="https://github.com/Patitotective/downit/tree/main/downit.nim#L80"
+href="https://github.com/Patitotective/downit/tree/main/downit.nim#L95"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/Patitotective/downit/edit/devel/downit.nim#L80" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/Patitotective/downit/edit/devel/downit.nim#L95" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -303,9 +333,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 Returns true if <tt class="docutils literal"><span class="pre"><span class="Identifier">name</span></span></tt> is being downloaded.
 &nbsp;&nbsp;<a
-href="https://github.com/Patitotective/downit/tree/main/downit.nim#L85"
+href="https://github.com/Patitotective/downit/tree/main/downit.nim#L100"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/Patitotective/downit/edit/devel/downit.nim#L85" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/Patitotective/downit/edit/devel/downit.nim#L100" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -315,9 +345,23 @@ class="link-seesrc" target="_blank">Source</a>
 
 Returns true if a download with <tt class="docutils literal"><span class="pre"><span class="Identifier">name</span></span></tt> exists.
 &nbsp;&nbsp;<a
-href="https://github.com/Patitotective/downit/tree/main/downit.nim#L41"
+href="https://github.com/Patitotective/downit/tree/main/downit.nim#L51"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/Patitotective/downit/edit/devel/downit.nim#L41" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/Patitotective/downit/edit/devel/downit.nim#L51" class="link-seesrc" target="_blank" >Edit</a>
+
+</dd>
+</div>
+<div id="get,Downloader,string">
+<dt><pre><span class="Keyword">proc</span> <a href="#get%2CDownloader%2Cstring"><span class="Identifier">get</span></a><span class="Other">(</span><span class="Identifier">self</span><span class="Other">:</span> <a href="downit.html#Downloader"><span class="Identifier">Downloader</span></a><span class="Other">;</span> <span class="Identifier">name</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">Option</span><span class="Other">[</span>
+    <span class="Keyword">tuple</span><span class="Other">[</span><span class="Identifier">url</span><span class="Other">,</span> <span class="Identifier">path</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">,</span> <span class="Identifier">error</span><span class="Other">:</span> <span class="Keyword">ref</span> <span class="Identifier">Exception</span><span class="Other">,</span> <span class="Identifier">state</span><span class="Other">:</span> <a href="downit.html#DownloadState"><span class="Identifier">DownloadState</span></a><span class="Other">]</span><span class="Other">]</span> {.
+    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">KeyError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+<dd>
+
+Returns the url, path, error and state of <tt class="docutils literal"><span class="pre"><span class="Identifier">name</span></span></tt> if it exists.
+&nbsp;&nbsp;<a
+href="https://github.com/Patitotective/downit/tree/main/downit.nim#L84"
+class="link-seesrc" target="_blank">Source</a>
+&nbsp;&nbsp;<a href="https://github.com/Patitotective/downit/edit/devel/downit.nim#L84" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -328,9 +372,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 Returns the exception of <tt class="docutils literal"><span class="pre"><span class="Identifier">name</span></span></tt> if it had a <tt class="docutils literal"><span class="pre"><span class="Identifier">DownloadError</span></span></tt>.
 &nbsp;&nbsp;<a
-href="https://github.com/Patitotective/downit/tree/main/downit.nim#L45"
+href="https://github.com/Patitotective/downit/tree/main/downit.nim#L55"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/Patitotective/downit/edit/devel/downit.nim#L45" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/Patitotective/downit/edit/devel/downit.nim#L55" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -341,9 +385,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 Returns the error message of <tt class="docutils literal"><span class="pre"><span class="Identifier">name</span></span></tt> if it had a <tt class="docutils literal"><span class="pre"><span class="Identifier">DownloadError</span></span></tt>.
 &nbsp;&nbsp;<a
-href="https://github.com/Patitotective/downit/tree/main/downit.nim#L50"
+href="https://github.com/Patitotective/downit/tree/main/downit.nim#L60"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/Patitotective/downit/edit/devel/downit.nim#L50" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/Patitotective/downit/edit/devel/downit.nim#L60" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -352,24 +396,24 @@ class="link-seesrc" target="_blank">Source</a>
     <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">KeyError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
 <dd>
 
-Returns the path of <tt class="docutils literal"><span class="pre"><span class="Identifier">name</span></span></tt> if exists, joined with the downloader's root dir if <tt class="docutils literal"><span class="pre"><span class="Identifier">joinDir</span></span></tt> is true otherwise returns the raw path.
+Returns the path of <tt class="docutils literal"><span class="pre"><span class="Identifier">name</span></span></tt> if it exists, joined with the downloader's root dir if <tt class="docutils literal"><span class="pre"><span class="Identifier">joinDir</span></span></tt> is true otherwise returns the raw path.
 &nbsp;&nbsp;<a
-href="https://github.com/Patitotective/downit/tree/main/downit.nim#L56"
+href="https://github.com/Patitotective/downit/tree/main/downit.nim#L66"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/Patitotective/downit/edit/devel/downit.nim#L56" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/Patitotective/downit/edit/devel/downit.nim#L66" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
 <div id="getState,Downloader,string">
-<dt><pre><span class="Keyword">proc</span> <a href="#getState%2CDownloader%2Cstring"><span class="Identifier">getState</span></a><span class="Other">(</span><span class="Identifier">self</span><span class="Other">:</span> <a href="downit.html#Downloader"><span class="Identifier">Downloader</span></a><span class="Other">;</span> <span class="Identifier">name</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">Option</span><span class="Other">[</span><a href="downit.html#DownState"><span class="Identifier">DownState</span></a><span class="Other">]</span> {.
+<dt><pre><span class="Keyword">proc</span> <a href="#getState%2CDownloader%2Cstring"><span class="Identifier">getState</span></a><span class="Other">(</span><span class="Identifier">self</span><span class="Other">:</span> <a href="downit.html#Downloader"><span class="Identifier">Downloader</span></a><span class="Other">;</span> <span class="Identifier">name</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">Option</span><span class="Other">[</span><a href="downit.html#DownloadState"><span class="Identifier">DownloadState</span></a><span class="Other">]</span> {.
     <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">KeyError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
 <dd>
 
-Returns the state of <tt class="docutils literal"><span class="pre"><span class="Identifier">name</span></span></tt> if exists.
+Returns the state of <tt class="docutils literal"><span class="pre"><span class="Identifier">name</span></span></tt> if it exists.
 &nbsp;&nbsp;<a
-href="https://github.com/Patitotective/downit/tree/main/downit.nim#L69"
+href="https://github.com/Patitotective/downit/tree/main/downit.nim#L79"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/Patitotective/downit/edit/devel/downit.nim#L69" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/Patitotective/downit/edit/devel/downit.nim#L79" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -378,11 +422,11 @@ class="link-seesrc" target="_blank">Source</a>
     <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">KeyError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
 <dd>
 
-Returns the url of <tt class="docutils literal"><span class="pre"><span class="Identifier">name</span></span></tt> if exists.
+Returns the url of <tt class="docutils literal"><span class="pre"><span class="Identifier">name</span></span></tt> if it exists.
 &nbsp;&nbsp;<a
-href="https://github.com/Patitotective/downit/tree/main/downit.nim#L64"
+href="https://github.com/Patitotective/downit/tree/main/downit.nim#L74"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/Patitotective/downit/edit/devel/downit.nim#L64" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/Patitotective/downit/edit/devel/downit.nim#L74" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -393,9 +437,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 Initializes a Downloader object and creates <tt class="docutils literal"><span class="pre"><span class="Identifier">dir</span></span></tt>.
 &nbsp;&nbsp;<a
-href="https://github.com/Patitotective/downit/tree/main/downit.nim#L36"
+href="https://github.com/Patitotective/downit/tree/main/downit.nim#L46"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/Patitotective/downit/edit/devel/downit.nim#L36" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/Patitotective/downit/edit/devel/downit.nim#L46" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -406,22 +450,23 @@ class="link-seesrc" target="_blank">Source</a>
 
 Removes <tt class="docutils literal"><span class="pre"><span class="Identifier">name</span></span></tt>'s path if it exists and set the state to <tt class="docutils literal"><span class="pre"><span class="Identifier">NotDownloaded</span></span></tt>.
 &nbsp;&nbsp;<a
-href="https://github.com/Patitotective/downit/tree/main/downit.nim#L74"
+href="https://github.com/Patitotective/downit/tree/main/downit.nim#L89"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/Patitotective/downit/edit/devel/downit.nim#L74" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/Patitotective/downit/edit/devel/downit.nim#L89" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
 <div id="update,Downloader">
 <dt><pre><span class="Keyword">proc</span> <a href="#update%2CDownloader"><span class="Identifier">update</span></a><span class="Other">(</span><span class="Identifier">self</span><span class="Other">:</span> <span class="Keyword">var</span> <a href="downit.html#Downloader"><span class="Identifier">Downloader</span></a><span class="Other">)</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Exception</span><span class="Other">,</span> <span class="Identifier">ValueError</span><span class="Other">,</span> <span class="Identifier">OSError</span><span class="Other">,</span>
-    <span class="Identifier">KeyError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">RootEffect</span><span class="Other">,</span> <span class="Identifier">TimeEffect</span><span class="Other">,</span> <span class="Identifier">ReadDirEffect</span><span class="Other">,</span> <span class="Identifier">WriteDirEffect</span><span class="Other">]</span></span>.}</pre></dt>
+    <span class="Identifier">KeyError</span><span class="Other">,</span> <span class="Identifier">LibraryError</span><span class="Other">,</span> <span class="Identifier">SslError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">RootEffect</span><span class="Other">,</span> <span class="Identifier">TimeEffect</span><span class="Other">,</span>
+    <span class="Identifier">ReadDirEffect</span><span class="Other">,</span> <span class="Identifier">WriteDirEffect</span><span class="Other">]</span></span>.}</pre></dt>
 <dd>
 
 Poll for any outstanding events and check if any download is complete.
 &nbsp;&nbsp;<a
-href="https://github.com/Patitotective/downit/tree/main/downit.nim#L105"
+href="https://github.com/Patitotective/downit/tree/main/downit.nim#L121"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/Patitotective/downit/edit/devel/downit.nim#L105" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/Patitotective/downit/edit/devel/downit.nim#L121" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -435,7 +480,7 @@ class="link-seesrc" target="_blank">Source</a>
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br/>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2022-06-16 01:43:08 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2022-06-16 02:01:46 UTC</small>
       </div>
     </div>
   </div>

@@ -1,8 +1,9 @@
-NotDownloaded	downit.html#NotDownloaded	DownState.NotDownloaded	
-Downloading	downit.html#Downloading	DownState.Downloading	
-Downloaded	downit.html#Downloaded	DownState.Downloaded	
-DownloadError	downit.html#DownloadError	DownState.DownloadError	
-DownState	downit.html#DownState	downit: DownState	
+NotDownloaded	downit.html#NotDownloaded	DownloadState.NotDownloaded	
+Downloading	downit.html#Downloading	DownloadState.Downloading	
+Downloaded	downit.html#Downloaded	DownloadState.Downloaded	
+DownloadError	downit.html#DownloadError	DownloadState.DownloadError	
+DownloadState	downit.html#DownloadState	downit: DownloadState	
+Download	downit.html#Download	downit: Download	
 Downloader	downit.html#Downloader	downit: Downloader	
 initDownloader	downit.html#initDownloader,string,int	downit: initDownloader(dir: string; timeout: int = 1): Downloader	
 exists	downit.html#exists,Downloader,string	downit: exists(self: Downloader; name: string): bool	
@@ -10,7 +11,8 @@ getError	downit.html#getError,Downloader,string	downit: getError(self: Downloade
 getErrorMsg	downit.html#getErrorMsg,Downloader,string	downit: getErrorMsg(self: Downloader; name: string): Option[string]	
 getPath	downit.html#getPath,Downloader,string	downit: getPath(self: Downloader; name: string; joinDir = true): Option[string]	
 getURL	downit.html#getURL,Downloader,string	downit: getURL(self: Downloader; name: string): Option[string]	
-getState	downit.html#getState,Downloader,string	downit: getState(self: Downloader; name: string): Option[DownState]	
+getState	downit.html#getState,Downloader,string	downit: getState(self: Downloader; name: string): Option[DownloadState]	
+get	downit.html#get,Downloader,string	downit: get(self: Downloader; name: string): Option[\n    tuple[url, path: string, error: ref Exception, state: DownloadState]]	
 remove	downit.html#remove,Downloader,string	downit: remove(self: var Downloader; name: string)	
 downloaded	downit.html#downloaded,Downloader,string	downit: downloaded(self: Downloader; name: string): bool	
 downloading	downit.html#downloading,Downloader,string	downit: downloading(self: Downloader; name: string): bool	
