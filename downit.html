@@ -196,7 +196,25 @@ class="link-seesrc" target="_blank">Source</a>
   <div class="nine columns" id="content">
   <div id="tocRoot"></div>
   
-  <p class="module-desc"></p>
+  <p class="module-desc"><p>The <tt class="docutils literal"><span class="pre"><span class="Identifier">Downloader</span></span></tt> object holds all the downloads data, <tt class="docutils literal"><span class="pre"><span class="Identifier">initDownloader</span></span></tt> takes the root directory for all the downloads (or <tt class="docutils literal"><span class="pre"><span class="StringLit">&quot;&quot;</span></span></tt> if none) and the poll timeout (by default 1 ms). After initializing it, downloadint something it's just as easy as calling <tt class="docutils literal"><span class="pre"><span class="Identifier">download</span></span></tt>, procedure that takes the url, path and an optional name, if not given the path will be the name. Setting a name is useful to identify a download and makes changing the path a lot easier. After requesting a download you may want to use the <tt class="docutils literal"><span class="pre"><span class="Identifier">downloading</span></span></tt> and <tt class="docutils literal"><span class="pre"><span class="Identifier">downloaded</span></span></tt> procedures to check wheter a download is complete, and if it finished with an error you should use <tt class="docutils literal"><span class="pre"><span class="Identifier">getError</span></span></tt> or <tt class="docutils literal"><span class="pre"><span class="Identifier">getErrorMsg</span></span></tt>.</p>
+<p><pre class="listing"><span class="Comment"># Documentation downloader</span>
+<span class="Keyword">var</span> <span class="Identifier">downloader</span> <span class="Operator">=</span> <span class="Identifier">initDownloader</span><span class="Punctuation">(</span><span class="StringLit">&quot;./docs&quot;</span><span class="Punctuation">)</span>
+<span class="Identifier">downloader</span><span class="Operator">.</span><span class="Identifier">download</span><span class="Punctuation">(</span><span class="StringLit">&quot;https://nim-lang.org/docs/os.html&quot;</span><span class="Punctuation">,</span> <span class="StringLit">&quot;os.html&quot;</span><span class="Punctuation">,</span> <span class="StringLit">&quot;os&quot;</span><span class="Punctuation">)</span>
+<span class="Identifier">downloader</span><span class="Operator">.</span><span class="Identifier">download</span><span class="Punctuation">(</span><span class="StringLit">&quot;https://nim-lang.org/docs/strutils.html&quot;</span><span class="Punctuation">,</span> <span class="StringLit">&quot;strutils.html&quot;</span><span class="Punctuation">,</span> <span class="StringLit">&quot;strutils&quot;</span><span class="Punctuation">)</span>
+<span class="Identifier">downloader</span><span class="Operator">.</span><span class="Identifier">download</span><span class="Punctuation">(</span><span class="StringLit">&quot;https://nim-lang.org/docs/strformat.html&quot;</span><span class="Punctuation">,</span> <span class="StringLit">&quot;strformat.html&quot;</span><span class="Punctuation">,</span> <span class="StringLit">&quot;strformat&quot;</span><span class="Punctuation">)</span>
+
+<span class="Keyword">while</span> <span class="Identifier">true</span><span class="Punctuation">:</span>
+  <span class="Identifier">downloader</span><span class="Operator">.</span><span class="Identifier">update</span><span class="Punctuation">(</span><span class="Punctuation">)</span> <span class="Comment"># Poll events and check if downloads are complete</span>
+  
+  <span class="Keyword">if</span> <span class="Identifier">downloader</span><span class="Operator">.</span><span class="Identifier">downloaded</span><span class="Punctuation">(</span><span class="StringLit">&quot;os&quot;</span><span class="Punctuation">)</span> <span class="Keyword">and</span> <span class="Identifier">downloader</span><span class="Operator">.</span><span class="Identifier">downloaded</span><span class="Punctuation">(</span><span class="StringLit">&quot;strutils&quot;</span><span class="Punctuation">)</span> <span class="Keyword">and</span> <span class="Identifier">downloader</span><span class="Operator">.</span><span class="Identifier">downloaded</span><span class="Punctuation">(</span><span class="StringLit">&quot;strformat&quot;</span><span class="Punctuation">)</span><span class="Punctuation">:</span>
+    <span class="Identifier">echo</span> <span class="Identifier">readFile</span><span class="Punctuation">(</span><span class="Identifier">downloader</span><span class="Operator">.</span><span class="Identifier">getPath</span><span class="Punctuation">(</span><span class="StringLit">&quot;os&quot;</span><span class="Punctuation">)</span><span class="Operator">.</span><span class="Identifier">get</span><span class="Punctuation">(</span><span class="Punctuation">)</span><span class="Punctuation">)</span>
+    <span class="Identifier">echo</span> <span class="Identifier">readFile</span><span class="Punctuation">(</span><span class="Identifier">downloader</span><span class="Operator">.</span><span class="Identifier">getPath</span><span class="Punctuation">(</span><span class="StringLit">&quot;strutils&quot;</span><span class="Punctuation">)</span><span class="Operator">.</span><span class="Identifier">get</span><span class="Punctuation">(</span><span class="Punctuation">)</span><span class="Punctuation">)</span>
+    <span class="Identifier">echo</span> <span class="Identifier">readFile</span><span class="Punctuation">(</span><span class="Identifier">downloader</span><span class="Operator">.</span><span class="Identifier">getPath</span><span class="Punctuation">(</span><span class="StringLit">&quot;strformat&quot;</span><span class="Punctuation">)</span><span class="Operator">.</span><span class="Identifier">get</span><span class="Punctuation">(</span><span class="Punctuation">)</span><span class="Punctuation">)</span>
+    <span class="Keyword">break</span>
+  <span class="Keyword">elif</span> <span class="Identifier">downloader</span><span class="Operator">.</span><span class="Identifier">getError</span><span class="Punctuation">(</span><span class="StringLit">&quot;os&quot;</span><span class="Punctuation">)</span><span class="Operator">.</span><span class="Identifier">isSome</span><span class="Punctuation">:</span>
+    <span class="Keyword">raise</span> <span class="Identifier">downloader</span><span class="Operator">.</span><span class="Identifier">getError</span><span class="Punctuation">(</span><span class="StringLit">&quot;os&quot;</span><span class="Punctuation">)</span><span class="Operator">.</span><span class="Identifier">get</span>
+</pre></p>
+</p>
   <div class="section" id="7">
 <h1><a class="toc-backref" href="#7">Types</a></h1>
 <dl class="item">
@@ -211,9 +229,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 
 &nbsp;&nbsp;<a
-href="https://github.com/Patitotective/downit/tree/main/downit.nim#L9"
+href="https://github.com/Patitotective/downit/tree/main/downit.nim#L31"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/Patitotective/downit/edit/devel/downit.nim#L9" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/Patitotective/downit/edit/devel/downit.nim#L31" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -224,9 +242,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 
 &nbsp;&nbsp;<a
-href="https://github.com/Patitotective/downit/tree/main/downit.nim#L6"
+href="https://github.com/Patitotective/downit/tree/main/downit.nim#L28"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/Patitotective/downit/edit/devel/downit.nim#L6" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/Patitotective/downit/edit/devel/downit.nim#L28" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -244,9 +262,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 Starts an asynchronous download of <tt class="docutils literal"><span class="pre"><span class="Identifier">url</span></span></tt> to <tt class="docutils literal"><span class="pre"><span class="Identifier">path</span></span></tt>. <tt class="docutils literal"><span class="pre"><span class="Identifier">path</span></span></tt> will be used as the name if <tt class="docutils literal"><span class="pre"><span class="Identifier">name</span></span></tt> is empty. If <tt class="docutils literal"><span class="pre"><span class="Identifier">replace</span></span></tt> is set to true and the file is downloaded overwrite it, otherwise if the file is downloaded and <tt class="docutils literal"><span class="pre"><span class="Identifier">replace</span></span></tt> is false do nothing. 
 &nbsp;&nbsp;<a
-href="https://github.com/Patitotective/downit/tree/main/downit.nim#L68"
+href="https://github.com/Patitotective/downit/tree/main/downit.nim#L90"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/Patitotective/downit/edit/devel/downit.nim#L68" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/Patitotective/downit/edit/devel/downit.nim#L90" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -259,9 +277,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 Downloads <tt class="docutils literal"><span class="pre"><span class="Identifier">name</span></span></tt> again if exists, does nothing otherwise.
 &nbsp;&nbsp;<a
-href="https://github.com/Patitotective/downit/tree/main/downit.nim#L78"
+href="https://github.com/Patitotective/downit/tree/main/downit.nim#L100"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/Patitotective/downit/edit/devel/downit.nim#L78" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/Patitotective/downit/edit/devel/downit.nim#L100" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -272,9 +290,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 Returns true if <tt class="docutils literal"><span class="pre"><span class="Identifier">name</span></span></tt> is downloaded AND the path exists.
 &nbsp;&nbsp;<a
-href="https://github.com/Patitotective/downit/tree/main/downit.nim#L58"
+href="https://github.com/Patitotective/downit/tree/main/downit.nim#L80"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/Patitotective/downit/edit/devel/downit.nim#L58" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/Patitotective/downit/edit/devel/downit.nim#L80" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -285,9 +303,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 Returns true if <tt class="docutils literal"><span class="pre"><span class="Identifier">name</span></span></tt> is being downloaded.
 &nbsp;&nbsp;<a
-href="https://github.com/Patitotective/downit/tree/main/downit.nim#L63"
+href="https://github.com/Patitotective/downit/tree/main/downit.nim#L85"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/Patitotective/downit/edit/devel/downit.nim#L63" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/Patitotective/downit/edit/devel/downit.nim#L85" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -297,9 +315,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 Returns true if a download with <tt class="docutils literal"><span class="pre"><span class="Identifier">name</span></span></tt> exists.
 &nbsp;&nbsp;<a
-href="https://github.com/Patitotective/downit/tree/main/downit.nim#L19"
+href="https://github.com/Patitotective/downit/tree/main/downit.nim#L41"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/Patitotective/downit/edit/devel/downit.nim#L19" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/Patitotective/downit/edit/devel/downit.nim#L41" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -310,9 +328,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 Returns the exception of <tt class="docutils literal"><span class="pre"><span class="Identifier">name</span></span></tt> if it had a <tt class="docutils literal"><span class="pre"><span class="Identifier">DownloadError</span></span></tt>.
 &nbsp;&nbsp;<a
-href="https://github.com/Patitotective/downit/tree/main/downit.nim#L23"
+href="https://github.com/Patitotective/downit/tree/main/downit.nim#L45"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/Patitotective/downit/edit/devel/downit.nim#L23" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/Patitotective/downit/edit/devel/downit.nim#L45" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -323,9 +341,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 Returns the error message of <tt class="docutils literal"><span class="pre"><span class="Identifier">name</span></span></tt> if it had a <tt class="docutils literal"><span class="pre"><span class="Identifier">DownloadError</span></span></tt>.
 &nbsp;&nbsp;<a
-href="https://github.com/Patitotective/downit/tree/main/downit.nim#L28"
+href="https://github.com/Patitotective/downit/tree/main/downit.nim#L50"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/Patitotective/downit/edit/devel/downit.nim#L28" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/Patitotective/downit/edit/devel/downit.nim#L50" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -336,9 +354,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 Returns the path of <tt class="docutils literal"><span class="pre"><span class="Identifier">name</span></span></tt> if exists, joined with the downloader's root dir if <tt class="docutils literal"><span class="pre"><span class="Identifier">joinDir</span></span></tt> is true otherwise returns the raw path.
 &nbsp;&nbsp;<a
-href="https://github.com/Patitotective/downit/tree/main/downit.nim#L34"
+href="https://github.com/Patitotective/downit/tree/main/downit.nim#L56"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/Patitotective/downit/edit/devel/downit.nim#L34" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/Patitotective/downit/edit/devel/downit.nim#L56" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -349,9 +367,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 Returns the state of <tt class="docutils literal"><span class="pre"><span class="Identifier">name</span></span></tt> if exists.
 &nbsp;&nbsp;<a
-href="https://github.com/Patitotective/downit/tree/main/downit.nim#L47"
+href="https://github.com/Patitotective/downit/tree/main/downit.nim#L69"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/Patitotective/downit/edit/devel/downit.nim#L47" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/Patitotective/downit/edit/devel/downit.nim#L69" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -362,9 +380,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 Returns the url of <tt class="docutils literal"><span class="pre"><span class="Identifier">name</span></span></tt> if exists.
 &nbsp;&nbsp;<a
-href="https://github.com/Patitotective/downit/tree/main/downit.nim#L42"
+href="https://github.com/Patitotective/downit/tree/main/downit.nim#L64"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/Patitotective/downit/edit/devel/downit.nim#L42" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/Patitotective/downit/edit/devel/downit.nim#L64" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -375,9 +393,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 Initializes a Downloader object and creates <tt class="docutils literal"><span class="pre"><span class="Identifier">dir</span></span></tt>.
 &nbsp;&nbsp;<a
-href="https://github.com/Patitotective/downit/tree/main/downit.nim#L14"
+href="https://github.com/Patitotective/downit/tree/main/downit.nim#L36"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/Patitotective/downit/edit/devel/downit.nim#L14" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/Patitotective/downit/edit/devel/downit.nim#L36" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -388,9 +406,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 Removes <tt class="docutils literal"><span class="pre"><span class="Identifier">name</span></span></tt>'s path if it exists and set the state to <tt class="docutils literal"><span class="pre"><span class="Identifier">NotDownloaded</span></span></tt>.
 &nbsp;&nbsp;<a
-href="https://github.com/Patitotective/downit/tree/main/downit.nim#L52"
+href="https://github.com/Patitotective/downit/tree/main/downit.nim#L74"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/Patitotective/downit/edit/devel/downit.nim#L52" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/Patitotective/downit/edit/devel/downit.nim#L74" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -401,9 +419,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 Poll for any outstanding events and check if any download is complete.
 &nbsp;&nbsp;<a
-href="https://github.com/Patitotective/downit/tree/main/downit.nim#L83"
+href="https://github.com/Patitotective/downit/tree/main/downit.nim#L105"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/Patitotective/downit/edit/devel/downit.nim#L83" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/Patitotective/downit/edit/devel/downit.nim#L105" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -417,7 +435,7 @@ class="link-seesrc" target="_blank">Source</a>
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br/>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2022-06-16 01:40:20 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2022-06-16 01:43:08 UTC</small>
       </div>
     </div>
   </div>
