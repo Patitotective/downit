@@ -1,0 +1,19 @@
+NotDownloaded	downit.html#NotDownloaded	DownState.NotDownloaded	
+Downloading	downit.html#Downloading	DownState.Downloading	
+Downloaded	downit.html#Downloaded	DownState.Downloaded	
+DownloadError	downit.html#DownloadError	DownState.DownloadError	
+DownState	downit.html#DownState	downit: DownState	
+Downloader	downit.html#Downloader	downit: Downloader	
+initDownloader	downit.html#initDownloader,string,int	downit: initDownloader(dir: string; timeout: int = 1): Downloader	
+exists	downit.html#exists,Downloader,string	downit: exists(self: Downloader; name: string): bool	
+getError	downit.html#getError,Downloader,string	downit: getError(self: Downloader; name: string): Option[ref Exception]	
+getErrorMsg	downit.html#getErrorMsg,Downloader,string	downit: getErrorMsg(self: Downloader; name: string): Option[string]	
+getPath	downit.html#getPath,Downloader,string	downit: getPath(self: Downloader; name: string; joinDir = true): Option[string]	
+getURL	downit.html#getURL,Downloader,string	downit: getURL(self: Downloader; name: string): Option[string]	
+getState	downit.html#getState,Downloader,string	downit: getState(self: Downloader; name: string): Option[DownState]	
+remove	downit.html#remove,Downloader,string	downit: remove(self: var Downloader; name: string)	
+downloaded	downit.html#downloaded,Downloader,string	downit: downloaded(self: Downloader; name: string): bool	
+downloading	downit.html#downloading,Downloader,string	downit: downloading(self: Downloader; name: string): bool	
+download	downit.html#download,Downloader,string,string,string	downit: download(self: var Downloader; url, path: string; name = &quot;&quot;; replace = false)	
+downloadAgain	downit.html#downloadAgain,Downloader,string	downit: downloadAgain(self: var Downloader; name: string)	
+update	downit.html#update,Downloader	downit: update(self: var Downloader)	
