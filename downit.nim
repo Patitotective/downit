@@ -25,13 +25,23 @@ import std/[asyncdispatch, httpclient, options, tables, os]
 export options
 
 type
-  DownState* = enum
+  DownloadState* = enum
     NotDownloaded, Downloading, Downloaded, DownloadError
   
+  Download* = object
+    url*, path*: string
+    error*: ref Exception
+    state*: DownloadState
+    client*: AsyncHttpClient
+    future*: Future[void]
+
   Downloader* = object
     dir*: string ## Root directory for all downloads
     timeout*: int ## Poll events timeout
-    downTable: Table[string, tuple[url, path: string, error: ref Exception, state: DownState, fut: Future[void]]]
+    downTable: Table[string, Download]
+
+proc initDownload(url, path: string, error: ref Exception, state: DownloadState, client: AsyncHttpClient, future: Future[void]): Download = 
+  Download(url: url, path: path, error: error, state: state, client: client, future: future)
 
 proc initDownloader*(dir: string, timeout: int = 1): Downloader = 
   ## Initializes a Downloader object and creates `dir`.
@@ -54,7 +64,7 @@ proc getErrorMsg*(self: Downloader, name: string): Option[string] =
     result = error.get().msg.some()
 
 proc getPath*(self: Downloader, name: string, joinDir = true): Option[string] = 
-  ## Returns the path of `name` if exists, joined with the downloader's root dir if `joinDir` is true otherwise returns the raw path.
+  ## Returns the path of `name` if it exists, joined with the downloader's root dir if `joinDir` is true otherwise returns the raw path.
   if self.exists(name):
     if joinDir:
       result = some(self.dir / self.downTable[name].path)
@@ -62,14 +72,19 @@ proc getPath*(self: Downloader, name: string, joinDir = true): Option[string] =
       result = self.downTable[name].path.some()
 
 proc getURL*(self: Downloader, name: string): Option[string] = 
-  ## Returns the url of `name` if exists.
+  ## Returns the url of `name` if it exists.
   if self.exists(name):
     result = self.downTable[name].url.some()
 
-proc getState*(self: Downloader, name: string): Option[DownState] = 
-  ## Returns the state of `name` if exists.
+proc getState*(self: Downloader, name: string): Option[DownloadState] = 
+  ## Returns the state of `name` if it exists.
   if self.exists(name):
     result = self.downTable[name].state.some()
+
+proc get*(self: Downloader, name: string): Option[tuple[url, path: string, error: ref Exception, state: DownloadState]] = 
+  ## Returns the url, path, error and state of `name` if it exists.
+  if self.exists(name):
+    result = (self.getURL(name).get(), self.getPath(name).get(), self.getError(name).get(), self.getState(name).get()).some()
 
 proc remove*(self: var Downloader, name: string) = 
   ## Removes `name`'s path if it exists and set the state to `NotDownloaded`.
@@ -95,10 +110,11 @@ proc download*(self: var Downloader, url, path: string, name = "", replace = fal
   
   path.splitPath.head.createDir()
   
-  self.downTable[if name.len > 0: name else: path] = (url, path, nil, Downloading, newAsyncHttpClient().downloadFile(url, self.dir / path))
+  let client = newAsyncHttpClient()
+  self.downTable[if name.len > 0: name else: path] = initDownload(url, path, nil, Downloading, client, client.downloadFile(url, self.dir / path))
 
 proc downloadAgain*(self: var Downloader, name: string) = 
-  ## Downloads `name` again if exists, does nothing otherwise.
+  ## Downloads `name` again if it exists, does nothing otherwise.
   if self.exists(name):
     self.download(self.getURL(name).get(), self.getPath(name, joinDir = false).get(), name, replace = true)
 
@@ -107,10 +123,12 @@ proc update*(self: var Downloader) =
   waitFor sleepAsync(self.timeout)
 
   for name, data in self.downTable:
-    if data.fut.finished and data.state == Downloading:
-      if data.fut.failed:
+    if data.future.finished and data.state == Downloading:
+      if data.future.failed:
         self.remove(name)
         self.downTable[name].state = DownloadError
-        self.downTable[name].error = data.fut.readError()
+        self.downTable[name].error = data.future.readError()
       elif self.getPath(name).get().fileExists():
         self.downTable[name].state = Downloaded
+
+      self.download[name].client.close()

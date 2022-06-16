@@ -23,6 +23,8 @@ while true:
   elif downloader.getError("os").isSome:
     raise downloader.getError("os").get
 ```
+Remember to compile with `-d:ssl`.
+
 Read more at the [docs](https://patitotective.github.io/downit)
 
 ## About
