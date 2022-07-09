@@ -1,12 +1,13 @@
-## The `Downloader` object holds all the downloads data, `initDownloader` takes the root directory for all the downloads (or `""` if none) and the poll timeout (by default 1 ms).  
-## After initializing it, downloadint something it's just as easy as calling `download`, procedure that takes the url, path and an optional name, if not given the path will be the name. Setting a name is useful to identify a download and makes changing the path a lot easier.  
-## After requesting a download you may want to use the `downloading` and `downloaded` procedures to check wheter a download is complete, and if it finished with an error you should use `getError` or `getErrorMsg`.  
+## The `Downloader` object holds all the downloads data, `initDownloader` takes the root directory for all the downloads (or `""` if none) and the poll timeout (by default 0 ms).  
+## After initializing it, downloading something it's just as easy as calling `download`, procedure that takes the url, path and an optional name, if not given the path will be the name. Setting a name is useful to identify a download and makes changing the path a lot easier.  
+## You can also make a GET request using the `request` procedure, passing the url and optionally a name.
+## After making a download/request you can use the `downloading`, `downloaded`, `finished` and `failed` procedures to check wheter a download/request finished, is still in progress or failed.
 ## ```nim
 ## # Documentation downloader
 ## var downloader = initDownloader("./docs")
 ## downloader.download("https://nim-lang.org/docs/os.html", "os.html", "os")
 ## downloader.download("https://nim-lang.org/docs/strutils.html", "strutils.html", "strutils")
-## downloader.download("https://nim-lang.org/docs/strformat.html", "strformat.html", "strformat")
+## downloader.request("https://nim-lang.org/docs/strformat.html", "strformat")
 ## 
 ## while true:
 ##   downloader.update() # Poll events and check if downloads are complete
@@ -14,36 +15,38 @@
 ##   if downloader.downloaded("os") and downloader.downloaded("strutils") and downloader.downloaded("strformat"):
 ##     echo readFile(downloader.getPath("os").get())
 ##     echo readFile(downloader.getPath("strutils").get())
-##     echo readFile(downloader.getPath("strformat").get())
+##     echo downloader.getBody("strformat").get()
 ##     break
-##   elif downloader.getError("os").isSome:
-##     raise downloader.getError("os").get
+## 
+##   elif downloader.getError("os").isSome: # You can also do downloader.getState("os").get() == DownloadError
+##     raise downloader.getError("os").get()
 ## ```
 
 import std/[asyncdispatch, httpclient, options, tables, os]
 
-export options
+export httpclient, options
 
 type
   DownloadState* = enum
-    NotDownloaded, Downloading, Downloaded, DownloadError
+    Downloading, Downloaded, DownloadError
   
   Download* = object
     url*, path*: string
-    error*: ref Exception
     state*: DownloadState
     client*: AsyncHttpClient
-    future*: Future[void]
+    error*: ref Exception
+    downFuture*: Future[void]
+    requestFuture*: Future[AsyncResponse]
 
   Downloader* = object
     dir*: string ## Root directory for all downloads
     timeout*: int ## Poll events timeout
     downTable: Table[string, Download]
 
-proc initDownload(url, path: string, error: ref Exception, state: DownloadState, client: AsyncHttpClient, future: Future[void]): Download = 
-  Download(url: url, path: path, error: error, state: state, client: client, future: future)
+proc initDownload(url, path: string, state: DownloadState, client: AsyncHttpClient, error: ref Exception = nil, downFuture: Future[void] = nil, requestFuture: Future[AsyncResponse] = nil): Download = 
+  Download(url: url, path: path, state: state, client: client, error: error, downFuture: downFuture, requestFuture: requestFuture)
 
-proc initDownloader*(dir: string, timeout: int = 1): Downloader = 
+proc initDownloader*(dir: string, timeout: int = 0): Downloader = 
   ## Initializes a Downloader object and creates `dir`.
   dir.createDir()
   Downloader(dir: dir, timeout: timeout)
@@ -63,9 +66,16 @@ proc getErrorMsg*(self: Downloader, name: string): Option[string] =
   if error.isSome:
     result = error.get().msg.some()
 
+proc isDownload*(self: Downloader, name: string): bool = 
+  result = self.exists(name) and self.downTable[name].path.len > 0
+
+proc isRequest*(self: Downloader, name: string): bool = 
+  result = self.exists(name) and self.downTable[name].path.len == 0
+
 proc getPath*(self: Downloader, name: string, joinDir = true): Option[string] = 
-  ## Returns the path of `name` if it exists, joined with the downloader's root dir if `joinDir` is true otherwise returns the raw path.
-  if self.exists(name):
+  ## Returns the path of `name` if it exists, joined with the downloader's root dir if `joinDir` is true otherwise returns the raw path.  
+  ## Returns none for requests.
+  if self.exists(name) and self.isDownload(name):
     if joinDir:
       result = some(self.dir / self.downTable[name].path)
     else:
@@ -81,54 +91,97 @@ proc getState*(self: Downloader, name: string): Option[DownloadState] =
   if self.exists(name):
     result = self.downTable[name].state.some()
 
-proc get*(self: Downloader, name: string): Option[tuple[url, path: string, error: ref Exception, state: DownloadState]] = 
-  ## Returns the url, path, error and state of `name` if it exists.
+proc getResponse*(self: Downloader, name: string): Option[AsyncResponse] = 
+  ## Returns the AsyncRespones of `name` if it finished.  
+  ## Returns none for downloads.
+  if self.exists(name) and self.isRequest(name) and self.downTable[name].state == Downloaded:
+    result = self.downTable[name].requestFuture.read().some()
+
+proc getBody*(self: Downloader, name: string): Option[string] = 
+  ## Returns the body of `name` if it finished.  
+  ## Returns none for downloads.
+  let response = self.getResponse(name)
+  if response.isSome and response.get().body.finished:
+    result = response.get().body.read().some() # body is procedure that returns a Future[string]
+
+proc get*(self: Downloader, name: string): Option[tuple[url, path: string, state: DownloadState, error: ref Exception, response: AsyncResponse]] = 
+  ## Returns the url, path, state, error and response of `name` if it exists.
   if self.exists(name):
-    result = (self.getURL(name).get(), self.getPath(name).get(), self.getError(name).get(), self.getState(name).get()).some()
+    result = (self.getURL(name).get(), self.getPath(name).get(), self.getState(name).get(), self.getError(name).get(), self.getResponse(name).get()).some()
 
 proc remove*(self: var Downloader, name: string) = 
-  ## Removes `name`'s path if it exists and set the state to `NotDownloaded`.
-  if self.exists(name):
+  ## Removes `name`'s file if it exists.
+  if self.exists(name) and self.isDownload(name):
     if self.getPath(name).get().fileExists(): self.getPath(name).get().removeFile()
-    self.downTable[name].state = NotDownloaded
 
-proc downloaded*(self: Downloader, name: string): bool = 
-  ## Returns true if `name` is downloaded AND the path exists.
-  if self.exists(name) and self.getState(name).get() == Downloaded and self.getPath(name).get().fileExists():
-    result = true
+proc succeed*(self: Downloader, name: string): bool = 
+  ## Returns true if `name` was downloaded/requested successfully, the path must exist if it is a download.
+  result = self.exists(name) and self.getState(name).get() == Downloaded and (self.isRequest(name) or self.getPath(name).get().fileExists())
 
-proc downloading*(self: Downloader, name: string): bool = 
-  ## Returns true if `name` is being downloaded.
-  if self.exists(name) and self.getState(name).get() == Downloading:
-    result = true
+proc finished*(self: Downloader, name: string): bool = 
+  ## Returns true if `name` succeed or failed.
+  result = self.exists(name) and self.getState(name).get() in {Downloaded, DownloadError}
+
+proc failed*(self: Downloader, name: string): bool = 
+  ## Returns true if `name` had a DownloadError.
+  result = self.exists(name) and self.getState(name).get() == DownloadError
+
+proc running*(self: Downloader, name: string): bool = 
+  ## Returns true if `name` is being downloaded/requested.
+  result = self.exists(name) and self.getState(name).get() == Downloading
 
 proc download*(self: var Downloader, url, path: string, name = "", replace = false) = 
   ## Starts an asynchronous download of `url` to `path`. 
   ## `path` will be used as the name if `name` is empty.  
   ## If `replace` is set to true and the file is downloaded overwrite it, otherwise if the file is downloaded and `replace` is false do nothing. 
-  if not replace and self.downloaded(if name.len > 0: name else: path): return
+  let name = if name.len > 0: name else: path
+  if not replace and self.succeed(name): return
   
   path.splitPath.head.createDir()
   
   let client = newAsyncHttpClient()
-  self.downTable[if name.len > 0: name else: path] = initDownload(url, path, nil, Downloading, client, client.downloadFile(url, self.dir / path))
+  self.downTable[name] = initDownload(url, path, Downloading, client, downFuture = client.downloadFile(url, self.dir / path))
+
+proc request*(self: var Downloader, url: string, name = "") = 
+  ## Starts an asynchronous GET request of `url`. 
+  ## `url` will be used as the name if `name` is empty.  
+  let name = if name.len > 0: name else: url
+  
+  let client = newAsyncHttpClient()
+  self.downTable[name] = initDownload(url, "", Downloading, client, requestFuture = client.get(url))
 
 proc downloadAgain*(self: var Downloader, name: string) = 
   ## Downloads `name` again if it exists, does nothing otherwise.
-  if self.exists(name):
-    self.download(self.getURL(name).get(), self.getPath(name, joinDir = false).get(), name, replace = true)
+  if self.exists(name) and self.isDownload(name):
+      self.download(self.getURL(name).get(), self.getPath(name, joinDir = false).get(), name, replace = true)
+
+proc requestAgain*(self: var Downloader, name: string) = 
+  ## Requests `name` again if it exists, does nothing otherwise.
+  if self.exists(name) and self.isRequest(name):
+    self.request(self.getURL(name).get(), name)
 
 proc update*(self: var Downloader) = 
-  ## Poll for any outstanding events and check if any download is complete.
+  ## Poll for any outstanding events and check if any download/request is complete.
   waitFor sleepAsync(self.timeout)
 
   for name, data in self.downTable:
-    if data.future.finished and data.state == Downloading:
-      if data.future.failed:
-        self.remove(name)
-        self.downTable[name].state = DownloadError
-        self.downTable[name].error = data.future.readError()
-      elif self.getPath(name).get().fileExists():
-        self.downTable[name].state = Downloaded
 
-      self.downTable[name].client.close()
+    if data.state == Downloading:
+      if not data.downFuture.isNil and data.downFuture.finished:
+        if data.downFuture.failed:
+          self.remove(name)
+          self.downTable[name].state = DownloadError
+          self.downTable[name].error = data.downFuture.readError()
+        elif self.getPath(name).get().fileExists():
+            self.downTable[name].state = Downloaded
+
+        self.downTable[name].client.close()
+
+      elif not data.requestFuture.isNil and data.requestFuture.finished and (data.requestFuture.failed or data.requestFuture.read().body.finished):
+        if data.requestFuture.failed:
+          self.downTable[name].state = DownloadError
+          self.downTable[name].error = data.requestFuture.readError()
+        else:
+          self.downTable[name].state = Downloaded
+
+        self.downTable[name].client.close()

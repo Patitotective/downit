@@ -11,19 +11,26 @@ import downit
 
 var downloader = initDownloader("tests/downloads")
 
-test "can download":
+test "can download and request":
   downloader.download("https://nim-lang.org/docs/os.html", "os.html", "os")
   downloader.download("https://nim-lang.osrg/docs/strutils.html", "strutils.html", "strutils") # Bad URL
+  downloader.request("https://nim-lang.org/docs/httpclient.html", "httpclient")
+  downloader.request("https://github.com/nim-lang/packages/blob/master/packages.json?raw=true", "packages")
 
+  var count = 0
   while true:
+    if count >= 1000:
+      raise newException(ValueError, "Too many iterations")
+
     downloader.update()
 
-    if downloader.downloaded("os"):
-      check downloader.getPath("os").get().fileExists()
+    if downloader.succeed("os") and downloader.failed("strutils") and downloader.succeed("httpclient") and downloader.succeed("packages"):
       break
 
-  while true:
-    downloader.update()
+    inc count
 
-    if downloader.getError("strutils").isSome:
-      break
+  check downloader.getPath("os").get().fileExists()
+  check downloader.getError("strutils").get().name == "OSError"
+  check downloader.getResponse("httpclient").get().status == "200 OK"
+  echo downloader.getResponse("packages").get().status
+  echo downloader.getBody("packages").get()
