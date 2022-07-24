@@ -14,7 +14,7 @@ var downloader = initDownloader("tests/downloads")
 test "can download and request":
   downloader.download("https://nim-lang.org/docs/os.html", "os.html", "os")
   downloader.download("https://nim-lang.osrg/docs/strutils.html", "strutils.html", "strutils") # Bad URL
-  downloader.request("https://nim-lang.org/docs/httpclient.html", "httpclient")
+  downloader.request("https://github.com/Patitotective/ImTemplate/blob/main/ImExample.nimble?raw=true", "ImExample")
   downloader.request("https://github.com/nim-lang/packages/blob/master/packages.json?raw=true", "packages")
 
   var count = 0
@@ -24,13 +24,12 @@ test "can download and request":
 
     downloader.update()
 
-    if downloader.succeed("os") and downloader.failed("strutils") and downloader.succeed("httpclient") and downloader.succeed("packages"):
+    if downloader.succeed("os") and downloader.failed("strutils") and downloader.succeed("ImExample") and downloader.succeed("packages"):
       break
 
     inc count
 
   check downloader.getPath("os").get().fileExists()
   check downloader.getError("strutils").get().name == "OSError"
-  check downloader.getResponse("httpclient").get().status == "200 OK"
-  echo downloader.getResponse("packages").get().status
-  echo downloader.getBody("packages").get()
+  check downloader.getResponse("ImExample").get().status == "200 OK"
+  check downloader.getResponse("packages").get().status == "200 OK"

@@ -3,18 +3,16 @@
 ## You can also make a GET request using the `request` procedure, passing the url and optionally a name.
 ## After making a download/request you can use the `downloading`, `downloaded`, `finished` and `failed` procedures to check wheter a download/request finished, is still in progress or failed.
 ## ```nim
-## # Documentation downloader
+# Documentation downloader
 ## var downloader = initDownloader("./docs")
 ## downloader.download("https://nim-lang.org/docs/os.html", "os.html", "os")
-## downloader.download("https://nim-lang.org/docs/strutils.html", "strutils.html", "strutils")
 ## downloader.request("https://nim-lang.org/docs/strformat.html", "strformat")
 ## 
 ## while true:
 ##   downloader.update() # Poll events and check if downloads are complete
 ## 
-##   if downloader.downloaded("os") and downloader.downloaded("strutils") and downloader.downloaded("strformat"):
+##   if downloader.succeed("os") and downloader.succeed("strformat"):
 ##     echo readFile(downloader.getPath("os").get())
-##     echo readFile(downloader.getPath("strutils").get())
 ##     echo downloader.getBody("strformat").get()
 ##     break
 ## 
@@ -33,7 +31,6 @@ type
   Download* = object
     url*, path*: string
     state*: DownloadState
-    client*: AsyncHttpClient
     error*: ref Exception
     downFuture*: Future[void]
     requestFuture*: Future[AsyncResponse]
@@ -43,8 +40,8 @@ type
     timeout*: int ## Poll events timeout
     downTable: Table[string, Download]
 
-proc initDownload(url, path: string, state: DownloadState, client: AsyncHttpClient, error: ref Exception = nil, downFuture: Future[void] = nil, requestFuture: Future[AsyncResponse] = nil): Download = 
-  Download(url: url, path: path, state: state, client: client, error: error, downFuture: downFuture, requestFuture: requestFuture)
+proc initDownload(url, path: string, state: DownloadState, error: ref Exception = nil, requestFuture: Future[AsyncResponse] = nil, downFuture: Future[void] = nil): Download = 
+  Download(url: url, path: path, state: state, error: error, requestFuture: requestFuture, downFuture: downFuture)
 
 proc initDownloader*(dir: string, timeout: int = 0): Downloader = 
   ## Initializes a Downloader object and creates `dir`.
@@ -100,14 +97,13 @@ proc getResponse*(self: Downloader, name: string): Option[AsyncResponse] =
 proc getBody*(self: Downloader, name: string): Option[string] = 
   ## Returns the body of `name` if it finished.  
   ## Returns none for downloads.
-  let response = self.getResponse(name)
-  if response.isSome and response.get().body.finished:
+  if (let response = self.getResponse(name); response.isSome and response.get().body.finished):
     result = response.get().body.read().some() # body is procedure that returns a Future[string]
 
-proc get*(self: Downloader, name: string): Option[tuple[url, path: string, state: DownloadState, error: ref Exception, response: AsyncResponse]] = 
-  ## Returns the url, path, state, error and response of `name` if it exists.
+proc get*(self: Downloader, name: string): Option[tuple[url: string, state: DownloadState, error: ref Exception]] = 
+  ## Returns the url, state and error of `name` if it exists.
   if self.exists(name):
-    result = (self.getURL(name).get(), self.getPath(name).get(), self.getState(name).get(), self.getError(name).get(), self.getResponse(name).get()).some()
+    result = (self.getURL(name).get(), self.getState(name).get(), self.getError(name).get()).some()
 
 proc remove*(self: var Downloader, name: string) = 
   ## Removes `name`'s file if it exists.
@@ -130,6 +126,11 @@ proc running*(self: Downloader, name: string): bool =
   ## Returns true if `name` is being downloaded/requested.
   result = self.exists(name) and self.getState(name).get() == Downloading
 
+proc downloadImpl*(url, path: string): Future[void] {.async.} = 
+  let client = newAsyncHttpClient()
+  await client.downloadFile(url, path)
+  client.close()
+
 proc download*(self: var Downloader, url, path: string, name = "", replace = false) = 
   ## Starts an asynchronous download of `url` to `path`. 
   ## `path` will be used as the name if `name` is empty.  
@@ -138,17 +139,21 @@ proc download*(self: var Downloader, url, path: string, name = "", replace = fal
   if not replace and self.succeed(name): return
   
   path.splitPath.head.createDir()
-  
+  self.downTable[name] = initDownload(url, path, Downloading, downFuture = downloadImpl(url, self.dir / path))
+
+proc requestImpl*(url: string): Future[AsyncResponse] {.async.} = 
   let client = newAsyncHttpClient()
-  self.downTable[name] = initDownload(url, path, Downloading, client, downFuture = client.downloadFile(url, self.dir / path))
+  result = await client.get(url)
+  yield result.body
+
+  client.close()
 
 proc request*(self: var Downloader, url: string, name = "") = 
   ## Starts an asynchronous GET request of `url`. 
   ## `url` will be used as the name if `name` is empty.  
   let name = if name.len > 0: name else: url
-  
-  let client = newAsyncHttpClient()
-  self.downTable[name] = initDownload(url, "", Downloading, client, requestFuture = client.get(url))
+
+  self.downTable[name] = initDownload(url, "", Downloading, requestFuture = requestImpl(url))
 
 proc downloadAgain*(self: var Downloader, name: string) = 
   ## Downloads `name` again if it exists, does nothing otherwise.
@@ -175,13 +180,9 @@ proc update*(self: var Downloader) =
         elif self.getPath(name).get().fileExists():
             self.downTable[name].state = Downloaded
 
-        self.downTable[name].client.close()
-
-      elif not data.requestFuture.isNil and data.requestFuture.finished and (data.requestFuture.failed or data.requestFuture.read().body.finished):
+      elif not data.requestFuture.isNil and data.requestFuture.finished:
         if data.requestFuture.failed:
           self.downTable[name].state = DownloadError
           self.downTable[name].error = data.requestFuture.readError()
         else:
           self.downTable[name].state = Downloaded
-
-        self.downTable[name].client.close()
