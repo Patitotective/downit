@@ -1,21 +1,30 @@
-NotDownloaded	downit.html#NotDownloaded	DownloadState.NotDownloaded	
 Downloading	downit.html#Downloading	DownloadState.Downloading	
 Downloaded	downit.html#Downloaded	DownloadState.Downloaded	
 DownloadError	downit.html#DownloadError	DownloadState.DownloadError	
 DownloadState	downit.html#DownloadState	downit: DownloadState	
 Download	downit.html#Download	downit: Download	
 Downloader	downit.html#Downloader	downit: Downloader	
-initDownloader	downit.html#initDownloader,string,int	downit: initDownloader(dir: string; timeout: int = 1): Downloader	
+initDownloader	downit.html#initDownloader,string,int	downit: initDownloader(dir: string; timeout: int = 0): Downloader	
 exists	downit.html#exists,Downloader,string	downit: exists(self: Downloader; name: string): bool	
 getError	downit.html#getError,Downloader,string	downit: getError(self: Downloader; name: string): Option[ref Exception]	
 getErrorMsg	downit.html#getErrorMsg,Downloader,string	downit: getErrorMsg(self: Downloader; name: string): Option[string]	
+isDownload	downit.html#isDownload,Downloader,string	downit: isDownload(self: Downloader; name: string): bool	
+isRequest	downit.html#isRequest,Downloader,string	downit: isRequest(self: Downloader; name: string): bool	
 getPath	downit.html#getPath,Downloader,string	downit: getPath(self: Downloader; name: string; joinDir = true): Option[string]	
 getURL	downit.html#getURL,Downloader,string	downit: getURL(self: Downloader; name: string): Option[string]	
 getState	downit.html#getState,Downloader,string	downit: getState(self: Downloader; name: string): Option[DownloadState]	
-get	downit.html#get,Downloader,string	downit: get(self: Downloader; name: string): Option[\n    tuple[url, path: string, error: ref Exception, state: DownloadState]]	
+getResponse	downit.html#getResponse,Downloader,string	downit: getResponse(self: Downloader; name: string): Option[AsyncResponse]	
+getBody	downit.html#getBody,Downloader,string	downit: getBody(self: Downloader; name: string): Option[string]	
+get	downit.html#get,Downloader,string	downit: get(self: Downloader; name: string): Option[\n    tuple[url: string, state: DownloadState, error: ref Exception]]	
 remove	downit.html#remove,Downloader,string	downit: remove(self: var Downloader; name: string)	
-downloaded	downit.html#downloaded,Downloader,string	downit: downloaded(self: Downloader; name: string): bool	
-downloading	downit.html#downloading,Downloader,string	downit: downloading(self: Downloader; name: string): bool	
+succeed	downit.html#succeed,Downloader,string	downit: succeed(self: Downloader; name: string): bool	
+finished	downit.html#finished,Downloader,string	downit: finished(self: Downloader; name: string): bool	
+failed	downit.html#failed,Downloader,string	downit: failed(self: Downloader; name: string): bool	
+running	downit.html#running,Downloader,string	downit: running(self: Downloader; name: string): bool	
+downloadImpl	downit.html#downloadImpl,string,string	downit: downloadImpl(url, path: string): Future[void]	
 download	downit.html#download,Downloader,string,string,string	downit: download(self: var Downloader; url, path: string; name = &quot;&quot;; replace = false)	
+requestImpl	downit.html#requestImpl,string	downit: requestImpl(url: string): Future[AsyncResponse]	
+request	downit.html#request,Downloader,string,string	downit: request(self: var Downloader; url: string; name = &quot;&quot;)	
 downloadAgain	downit.html#downloadAgain,Downloader,string	downit: downloadAgain(self: var Downloader; name: string)	
+requestAgain	downit.html#requestAgain,Downloader,string	downit: requestAgain(self: var Downloader; name: string)	
 update	downit.html#update,Downloader	downit: update(self: var Downloader)	

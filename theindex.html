@@ -87,10 +87,6 @@ window.addEventListener('DOMContentLoaded', main);
 <li><a class="reference external"
           data-doc-search-tag="DownloadState.Downloaded" href="downit.html#Downloaded">DownloadState.Downloaded</a></li>
           </ul></dd>
-<dt><a name="downloaded" href="#downloaded"><span>downloaded:</span></a></dt><dd><ul class="simple">
-<li><a class="reference external"
-          data-doc-search-tag="downit: downloaded(self: Downloader; name: string): bool" href="downit.html#downloaded%2CDownloader%2Cstring">downit: downloaded(self: Downloader; name: string): bool</a></li>
-          </ul></dd>
 <dt><a name="Downloader" href="#Downloader"><span>Downloader:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="downit: Downloader" href="downit.html#Downloader">downit: Downloader</a></li>
@@ -99,13 +95,13 @@ window.addEventListener('DOMContentLoaded', main);
 <li><a class="reference external"
           data-doc-search-tag="DownloadState.DownloadError" href="downit.html#DownloadError">DownloadState.DownloadError</a></li>
           </ul></dd>
+<dt><a name="downloadImpl" href="#downloadImpl"><span>downloadImpl:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="downit: downloadImpl(url, path: string): Future[void]" href="downit.html#downloadImpl%2Cstring%2Cstring">downit: downloadImpl(url, path: string): Future[void]</a></li>
+          </ul></dd>
 <dt><a name="Downloading" href="#Downloading"><span>Downloading:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="DownloadState.Downloading" href="downit.html#Downloading">DownloadState.Downloading</a></li>
-          </ul></dd>
-<dt><a name="downloading" href="#downloading"><span>downloading:</span></a></dt><dd><ul class="simple">
-<li><a class="reference external"
-          data-doc-search-tag="downit: downloading(self: Downloader; name: string): bool" href="downit.html#downloading%2CDownloader%2Cstring">downit: downloading(self: Downloader; name: string): bool</a></li>
           </ul></dd>
 <dt><a name="DownloadState" href="#DownloadState"><span>DownloadState:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -115,11 +111,23 @@ window.addEventListener('DOMContentLoaded', main);
 <li><a class="reference external"
           data-doc-search-tag="downit: exists(self: Downloader; name: string): bool" href="downit.html#exists%2CDownloader%2Cstring">downit: exists(self: Downloader; name: string): bool</a></li>
           </ul></dd>
+<dt><a name="failed" href="#failed"><span>failed:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="downit: failed(self: Downloader; name: string): bool" href="downit.html#failed%2CDownloader%2Cstring">downit: failed(self: Downloader; name: string): bool</a></li>
+          </ul></dd>
+<dt><a name="finished" href="#finished"><span>finished:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="downit: finished(self: Downloader; name: string): bool" href="downit.html#finished%2CDownloader%2Cstring">downit: finished(self: Downloader; name: string): bool</a></li>
+          </ul></dd>
 <dt><a name="get" href="#get"><span>get:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="downit: get(self: Downloader; name: string): Option[
-    tuple[url, path: string, error: ref Exception, state: DownloadState]]" href="downit.html#get%2CDownloader%2Cstring">downit: get(self: Downloader; name: string): Option[
-    tuple[url, path: string, error: ref Exception, state: DownloadState]]</a></li>
+    tuple[url: string, state: DownloadState, error: ref Exception]]" href="downit.html#get%2CDownloader%2Cstring">downit: get(self: Downloader; name: string): Option[
+    tuple[url: string, state: DownloadState, error: ref Exception]]</a></li>
+          </ul></dd>
+<dt><a name="getBody" href="#getBody"><span>getBody:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="downit: getBody(self: Downloader; name: string): Option[string]" href="downit.html#getBody%2CDownloader%2Cstring">downit: getBody(self: Downloader; name: string): Option[string]</a></li>
           </ul></dd>
 <dt><a name="getError" href="#getError"><span>getError:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -133,6 +141,10 @@ window.addEventListener('DOMContentLoaded', main);
 <li><a class="reference external"
           data-doc-search-tag="downit: getPath(self: Downloader; name: string; joinDir = true): Option[string]" href="downit.html#getPath%2CDownloader%2Cstring">downit: getPath(self: Downloader; name: string; joinDir = true): Option[string]</a></li>
           </ul></dd>
+<dt><a name="getResponse" href="#getResponse"><span>getResponse:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="downit: getResponse(self: Downloader; name: string): Option[AsyncResponse]" href="downit.html#getResponse%2CDownloader%2Cstring">downit: getResponse(self: Downloader; name: string): Option[AsyncResponse]</a></li>
+          </ul></dd>
 <dt><a name="getState" href="#getState"><span>getState:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="downit: getState(self: Downloader; name: string): Option[DownloadState]" href="downit.html#getState%2CDownloader%2Cstring">downit: getState(self: Downloader; name: string): Option[DownloadState]</a></li>
@@ -143,15 +155,39 @@ window.addEventListener('DOMContentLoaded', main);
           </ul></dd>
 <dt><a name="initDownloader" href="#initDownloader"><span>initDownloader:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="downit: initDownloader(dir: string; timeout: int = 1): Downloader" href="downit.html#initDownloader%2Cstring%2Cint">downit: initDownloader(dir: string; timeout: int = 1): Downloader</a></li>
+          data-doc-search-tag="downit: initDownloader(dir: string; timeout: int = 0): Downloader" href="downit.html#initDownloader%2Cstring%2Cint">downit: initDownloader(dir: string; timeout: int = 0): Downloader</a></li>
           </ul></dd>
-<dt><a name="NotDownloaded" href="#NotDownloaded"><span>NotDownloaded:</span></a></dt><dd><ul class="simple">
+<dt><a name="isDownload" href="#isDownload"><span>isDownload:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="DownloadState.NotDownloaded" href="downit.html#NotDownloaded">DownloadState.NotDownloaded</a></li>
+          data-doc-search-tag="downit: isDownload(self: Downloader; name: string): bool" href="downit.html#isDownload%2CDownloader%2Cstring">downit: isDownload(self: Downloader; name: string): bool</a></li>
+          </ul></dd>
+<dt><a name="isRequest" href="#isRequest"><span>isRequest:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="downit: isRequest(self: Downloader; name: string): bool" href="downit.html#isRequest%2CDownloader%2Cstring">downit: isRequest(self: Downloader; name: string): bool</a></li>
           </ul></dd>
 <dt><a name="remove" href="#remove"><span>remove:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="downit: remove(self: var Downloader; name: string)" href="downit.html#remove%2CDownloader%2Cstring">downit: remove(self: var Downloader; name: string)</a></li>
+          </ul></dd>
+<dt><a name="request" href="#request"><span>request:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="downit: request(self: var Downloader; url: string; name = &quot;&quot;)" href="downit.html#request%2CDownloader%2Cstring%2Cstring">downit: request(self: var Downloader; url: string; name = &quot;&quot;)</a></li>
+          </ul></dd>
+<dt><a name="requestAgain" href="#requestAgain"><span>requestAgain:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="downit: requestAgain(self: var Downloader; name: string)" href="downit.html#requestAgain%2CDownloader%2Cstring">downit: requestAgain(self: var Downloader; name: string)</a></li>
+          </ul></dd>
+<dt><a name="requestImpl" href="#requestImpl"><span>requestImpl:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="downit: requestImpl(url: string): Future[AsyncResponse]" href="downit.html#requestImpl%2Cstring">downit: requestImpl(url: string): Future[AsyncResponse]</a></li>
+          </ul></dd>
+<dt><a name="running" href="#running"><span>running:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="downit: running(self: Downloader; name: string): bool" href="downit.html#running%2CDownloader%2Cstring">downit: running(self: Downloader; name: string): bool</a></li>
+          </ul></dd>
+<dt><a name="succeed" href="#succeed"><span>succeed:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="downit: succeed(self: Downloader; name: string): bool" href="downit.html#succeed%2CDownloader%2Cstring">downit: succeed(self: Downloader; name: string): bool</a></li>
           </ul></dd>
 <dt><a name="update" href="#update"><span>update:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -162,7 +198,7 @@ window.addEventListener('DOMContentLoaded', main);
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br/>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2022-06-16 02:01:46 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2022-07-24 20:36:50 UTC</small>
       </div>
     </div>
   </div>
