@@ -19,7 +19,7 @@ test "can download and request":
 
   var count = 0
   while true:
-    if count >= 1000:
+    if count >= 2000:
       raise newException(ValueError, "Too many iterations")
 
     downloader.update()

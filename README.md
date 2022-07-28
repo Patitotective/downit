@@ -6,7 +6,7 @@ nimble install downit
 ```
 
 ## Usage
-The `Downloader` object holds all the downloads data, `initDownloader` takes the root directory for all the downloads (or `""` if none) and the poll timeout (by default 0 ms).  
+The `Downloader` object holds all the downloads data, `initDownloader` takes the root directory for all the downloads (or `""` if none) and the poll timeout (by default 1 ms).  
 After initializing it, downloading something it's just as easy as calling `download`, procedure that takes the url, path and an optional name, if not given the path will be the name. Setting a name is useful to identify a download and makes changing the path a lot easier.  
 You can also make a GET request using the `request` procedure, passing the url and optionally a name.
 After making a download/request you can use the `running`, `succeed`, `finished` and `failed` procedures to check wheter a download/request finished, is still in progress or failed.
