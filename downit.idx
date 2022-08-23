@@ -4,7 +4,7 @@ DownloadError	downit.html#DownloadError	DownloadState.DownloadError
 DownloadState	downit.html#DownloadState	downit: DownloadState	
 Download	downit.html#Download	downit: Download	
 Downloader	downit.html#Downloader	downit: Downloader	
-initDownloader	downit.html#initDownloader,string,int	downit: initDownloader(dir: string; timeout: int = 0): Downloader	
+initDownloader	downit.html#initDownloader,string,int	downit: initDownloader(dir: string; timeout = 1): Downloader	
 exists	downit.html#exists,Downloader,string	downit: exists(self: Downloader; name: string): bool	
 getError	downit.html#getError,Downloader,string	downit: getError(self: Downloader; name: string): Option[ref Exception]	
 getErrorMsg	downit.html#getErrorMsg,Downloader,string	downit: getErrorMsg(self: Downloader; name: string): Option[string]	
@@ -15,7 +15,6 @@ getURL	downit.html#getURL,Downloader,string	downit: getURL(self: Downloader; nam
 getState	downit.html#getState,Downloader,string	downit: getState(self: Downloader; name: string): Option[DownloadState]	
 getResponse	downit.html#getResponse,Downloader,string	downit: getResponse(self: Downloader; name: string): Option[AsyncResponse]	
 getBody	downit.html#getBody,Downloader,string	downit: getBody(self: Downloader; name: string): Option[string]	
-get	downit.html#get,Downloader,string	downit: get(self: Downloader; name: string): Option[\n    tuple[url: string, state: DownloadState, error: ref Exception]]	
 remove	downit.html#remove,Downloader,string	downit: remove(self: var Downloader; name: string)	
 succeed	downit.html#succeed,Downloader,string	downit: succeed(self: Downloader; name: string): bool	
 finished	downit.html#finished,Downloader,string	downit: finished(self: Downloader; name: string): bool	
