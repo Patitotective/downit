@@ -33,7 +33,7 @@ Read more at the [docs](https://patitotective.github.io/downit)
 
 ## About
 - GitHub: https://github.com/Patitotective/ImTemplate.
-- Discord: https://discord.gg/as85Q4GnR6.
+- Discord: https://discord.gg/gdcPVjazCG.
 
 Contact me:
 - Discord: **Patitotective#0127**.
