@@ -1,6 +1,6 @@
 # Package
 
-version       = "0.2.2"
+version       = "0.3.2"
 author        = "Patitotective"
 description   = "An asynchronous donwload system."
 license       = "MIT"
