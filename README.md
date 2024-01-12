@@ -11,7 +11,7 @@ After initializing it, downloading something it's just as easy as calling `downl
 You can also make a GET request using the `request` procedure, passing the url and optionally a name.
 After making a download/request you can use the `running`, `succeed`, `finished` and `failed` procedures to check wheter a download/request finished, is still in progress or failed.
 ```nim
-var downloader = initDownloader("./docs")
+var downloader = initDownloader("./docs") # We could add proxy = "http://127.0.0.1:8888"
 downloader.download("https://nim-lang.org/docs/os.html", "os.html", "os")
 downloader.request("https://nim-lang.org/docs/strformat.html", "strformat")
 
