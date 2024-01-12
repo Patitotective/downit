@@ -6,13 +6,12 @@ nimble install downit
 ```
 
 ## Usage
-The `Downloader` object holds all the downloads data, `initDownloader` takes the root directory for all the downloads (or `""` if none) and the poll timeout (by default 1 ms).  
+The `Downloader` object holds all the downloads data, `initDownloader` takes the root directory for all the downloads (or `""` if none), the poll timeout (by default 1 ms), and optionally a proxy, an username and a password for the proxy (you can change the proxy always using `setProxy` or `removeProxy`).  
 After initializing it, downloading something it's just as easy as calling `download`, procedure that takes the url, path and an optional name, if not given the path will be the name. Setting a name is useful to identify a download and makes changing the path a lot easier.  
 You can also make a GET request using the `request` procedure, passing the url and optionally a name.
 After making a download/request you can use the `running`, `succeed`, `finished` and `failed` procedures to check wheter a download/request finished, is still in progress or failed.
 ```nim
-# Documentation downloader
-var downloader = initDownloader("./docs")
+var downloader = initDownloader("./docs") # We could add proxy = "http://127.0.0.1:8888"
 downloader.download("https://nim-lang.org/docs/os.html", "os.html", "os")
 downloader.request("https://nim-lang.org/docs/strformat.html", "strformat")
 

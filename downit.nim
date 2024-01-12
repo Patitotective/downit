@@ -38,15 +38,24 @@ type
   Downloader* = object
     dir*: string ## Root directory for all downloads
     timeout*: int ## Poll events timeout
+    proxy: Proxy
     downTable: Table[string, Download]
 
 proc initDownload(url, path: string, state: DownloadState, error: ref Exception = nil, requestFuture: Future[AsyncResponse] = nil, downFuture: Future[void] = nil): Download = 
   Download(url: url, path: path, state: state, error: error, requestFuture: requestFuture, downFuture: downFuture)
 
-proc initDownloader*(dir: string, timeout = 1): Downloader = 
+proc setProxy*(self: var Downloader, proxy: string, proxyUser, proxyPassword = "") = 
+  self.proxy = newProxy(proxy, auth = proxyUser & ':' & proxyPassword)
+
+proc removeProxy*(self: var Downloader) = 
+  self.proxy = nil
+
+proc initDownloader*(dir: string, timeout = 1, proxy, proxyUser, proxyPassword = ""): Downloader = 
   ## Initializes a Downloader object and creates `dir`.
   dir.createDir()
-  Downloader(dir: dir, timeout: timeout)
+  result = Downloader(dir: dir, timeout: timeout)
+  if proxy.len > 0:
+    result.setProxy(proxy, proxyUser, proxyPassword)
 
 proc exists*(self: Downloader, name: string): bool = 
   ## Returns true if a download with `name` exists.
@@ -120,22 +129,26 @@ proc running*(self: Downloader, name: string): bool =
   ## Returns true if `name` is being downloaded/requested.
   self.exists(name) and self.getState(name).get() == Downloading
 
-proc downloadImpl*(url, path: string): Future[void] {.async.} = 
-  let client = newAsyncHttpClient()
+proc downTable*(self: Downloader): Table[string, Download] = 
+  self.downTable
+
+proc downloadImpl*(url, path: string, proxy: Proxy, onProgressChanged: ProgressChangedProc[Future[void]] = nil): Future[void] {.async.} = 
+  let client = newAsyncHttpClient(proxy = proxy)
+  client.onProgressChanged = onProgressChanged
   await client.downloadFile(url, path)
   client.close()
 
-proc download*(self: var Downloader, url, path: string, name = "", replace = false) = 
+proc download*(self: var Downloader, url, path: string, name = "", replace = false, onProgressChanged: ProgressChangedProc[Future[void]] = nil) = 
   ## Starts an asynchronous download of `url` to `path`. 
   ## `path` will be used as the name if `name` is empty.  
   ## If `replace` is set to true and the file is downloaded overwrite it, otherwise if the file is downloaded and `replace` is false do nothing. 
   if not replace and self.succeed(name): return
   
   path.splitPath.head.createDir()
-  self.downTable[if name.len > 0: name else: path] = initDownload(url, path, Downloading, downFuture = downloadImpl(url, self.dir / path))
+  self.downTable[if name.len > 0: name else: path] = initDownload(url, path, Downloading, downFuture = downloadImpl(url, self.dir / path, self.proxy, onProgressChanged))
 
-proc requestImpl*(url: string): Future[AsyncResponse] {.async.} = 
-  let client = newAsyncHttpClient()
+proc requestImpl*(url: string, proxy: Proxy): Future[AsyncResponse] {.async.} = 
+  let client = newAsyncHttpClient(proxy = proxy)
   result = await client.get(url)
   yield result.body
   client.close()
@@ -143,7 +156,7 @@ proc requestImpl*(url: string): Future[AsyncResponse] {.async.} =
 proc request*(self: var Downloader, url: string, name = "") = 
   ## Starts an asynchronous GET request of `url`. 
   ## `url` will be used as the name if `name` is empty.  
-  self.downTable[if name.len > 0: name else: url] = initDownload(url, "", Downloading, requestFuture = requestImpl(url))
+  self.downTable[if name.len > 0: name else: url] = initDownload(url, "", Downloading, requestFuture = requestImpl(url, self.proxy))
 
 proc downloadAgain*(self: var Downloader, name: string) = 
   ## Downloads `name` again if it exists, does nothing otherwise.
