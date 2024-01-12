@@ -39,7 +39,7 @@ type
     dir*: string ## Root directory for all downloads
     timeout*: int ## Poll events timeout
     proxy: Proxy
-    downTable: Table[string, Download]
+    downTable*: Table[string, Download]
 
 proc initDownload(url, path: string, state: DownloadState, error: ref Exception = nil, requestFuture: Future[AsyncResponse] = nil, downFuture: Future[void] = nil): Download = 
   Download(url: url, path: path, state: state, error: error, requestFuture: requestFuture, downFuture: downFuture)
