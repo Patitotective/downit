@@ -59,7 +59,8 @@
   requestFuture*: Future[AsyncResponse]">Download</a></li>
 <li><a class="reference" href="#Downloader" title="Downloader = object
   dir*: string               ## Root directory for all downloads
-  timeout*: int              ## Poll events timeout">Downloader</a></li>
+  timeout*: int              ## Poll events timeout
+  downTable*: Table[string, Download]">Downloader</a></li>
 <li><a class="reference" href="#DownloadState" title="DownloadState = enum
   Downloading, Downloaded, DownloadError">DownloadState</a></li>
 
@@ -235,7 +236,8 @@
   <dt><pre><a href="downit.html#Downloader"><span class="Identifier">Downloader</span></a> <span class="Other">=</span> <span class="Keyword">object</span>
   <span class="Identifier">dir</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">string</span>               <span class="Comment">## Root directory for all downloads</span>
   <span class="Identifier">timeout</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">int</span>              <span class="Comment">## Poll events timeout</span>
-  </pre></dt>
+  <span class="Identifier">downTable</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">Table</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">,</span> <a href="downit.html#Download"><span class="Identifier">Download</span></a><span class="Other">]</span>
+</pre></dt>
   <dd>
     
     
@@ -651,7 +653,7 @@
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2024-01-12 00:35:00 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2024-01-12 00:42:50 UTC</small>
       </div>
     </div>
   </div>
