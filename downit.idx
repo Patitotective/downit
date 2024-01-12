@@ -5,26 +5,29 @@ nim	DownloadError	downit.html#DownloadError	DownloadState.DownloadError		28
 nim	DownloadState	downit.html#DownloadState	enum DownloadState		28
 nim	Download	downit.html#Download	object Download		31
 nim	Downloader	downit.html#Downloader	object Downloader		38
-nim	initDownloader	downit.html#initDownloader,string,int	proc initDownloader(dir: string; timeout = 1): Downloader		46
-nim	exists	downit.html#exists,Downloader,string	proc exists(self: Downloader; name: string): bool		51
-nim	getError	downit.html#getError,Downloader,string	proc getError(self: Downloader; name: string): Option[ref Exception]		55
-nim	getErrorMsg	downit.html#getErrorMsg,Downloader,string	proc getErrorMsg(self: Downloader; name: string): Option[string]		60
-nim	isDownload	downit.html#isDownload,Downloader,string	proc isDownload(self: Downloader; name: string): bool		65
-nim	isRequest	downit.html#isRequest,Downloader,string	proc isRequest(self: Downloader; name: string): bool		68
-nim	getPath	downit.html#getPath,Downloader,string	proc getPath(self: Downloader; name: string; joinDir = true): Option[string]		71
-nim	getURL	downit.html#getURL,Downloader,string	proc getURL(self: Downloader; name: string): Option[string]		80
-nim	getState	downit.html#getState,Downloader,string	proc getState(self: Downloader; name: string): Option[DownloadState]		85
-nim	getResponse	downit.html#getResponse,Downloader,string	proc getResponse(self: Downloader; name: string): Option[AsyncResponse]		90
-nim	getBody	downit.html#getBody,Downloader,string	proc getBody(self: Downloader; name: string): Option[string]		96
-nim	remove	downit.html#remove,Downloader,string	proc remove(self: var Downloader; name: string)		102
-nim	succeed	downit.html#succeed,Downloader,string	proc succeed(self: Downloader; name: string): bool		107
-nim	finished	downit.html#finished,Downloader,string	proc finished(self: Downloader; name: string): bool		111
-nim	failed	downit.html#failed,Downloader,string	proc failed(self: Downloader; name: string): bool		115
-nim	running	downit.html#running,Downloader,string	proc running(self: Downloader; name: string): bool		119
-nim	downloadImpl	downit.html#downloadImpl,string,string	proc downloadImpl(url, path: string): Future[void]		123
-nim	download	downit.html#download,Downloader,string,string,string	proc download(self: var Downloader; url, path: string; name = ""; replace = false)		128
-nim	requestImpl	downit.html#requestImpl,string	proc requestImpl(url: string): Future[AsyncResponse]		137
-nim	request	downit.html#request,Downloader,string,string	proc request(self: var Downloader; url: string; name = "")		143
-nim	downloadAgain	downit.html#downloadAgain,Downloader,string	proc downloadAgain(self: var Downloader; name: string)		148
-nim	requestAgain	downit.html#requestAgain,Downloader,string	proc requestAgain(self: var Downloader; name: string)		153
-nim	update	downit.html#update,Downloader	proc update(self: var Downloader)		158
+nim	setProxy	downit.html#setProxy,Downloader,string,string,string	proc setProxy(self: var Downloader; proxy: string; proxyUser, proxyPassword = "")		47
+nim	removeProxy	downit.html#removeProxy,Downloader	proc removeProxy(self: var Downloader)		50
+nim	initDownloader	downit.html#initDownloader,string,int,string,string,string	proc initDownloader(dir: string; timeout = 1; proxy, proxyUser, proxyPassword = ""): Downloader		53
+nim	exists	downit.html#exists,Downloader,string	proc exists(self: Downloader; name: string): bool		60
+nim	getError	downit.html#getError,Downloader,string	proc getError(self: Downloader; name: string): Option[ref Exception]		64
+nim	getErrorMsg	downit.html#getErrorMsg,Downloader,string	proc getErrorMsg(self: Downloader; name: string): Option[string]		69
+nim	isDownload	downit.html#isDownload,Downloader,string	proc isDownload(self: Downloader; name: string): bool		74
+nim	isRequest	downit.html#isRequest,Downloader,string	proc isRequest(self: Downloader; name: string): bool		77
+nim	getPath	downit.html#getPath,Downloader,string	proc getPath(self: Downloader; name: string; joinDir = true): Option[string]		80
+nim	getURL	downit.html#getURL,Downloader,string	proc getURL(self: Downloader; name: string): Option[string]		89
+nim	getState	downit.html#getState,Downloader,string	proc getState(self: Downloader; name: string): Option[DownloadState]		94
+nim	getResponse	downit.html#getResponse,Downloader,string	proc getResponse(self: Downloader; name: string): Option[AsyncResponse]		99
+nim	getBody	downit.html#getBody,Downloader,string	proc getBody(self: Downloader; name: string): Option[string]		105
+nim	remove	downit.html#remove,Downloader,string	proc remove(self: var Downloader; name: string)		111
+nim	succeed	downit.html#succeed,Downloader,string	proc succeed(self: Downloader; name: string): bool		116
+nim	finished	downit.html#finished,Downloader,string	proc finished(self: Downloader; name: string): bool		120
+nim	failed	downit.html#failed,Downloader,string	proc failed(self: Downloader; name: string): bool		124
+nim	running	downit.html#running,Downloader,string	proc running(self: Downloader; name: string): bool		128
+nim	downTable	downit.html#downTable,Downloader	proc downTable(self: Downloader): Table[string, Download]		132
+nim	downloadImpl	downit.html#downloadImpl,string,string,Proxy,ProgressChangedProc[Future[void]]	proc downloadImpl(url, path: string; proxy: Proxy;\n             onProgressChanged: ProgressChangedProc[Future[void]] = nil): Future[\n    void]		135
+nim	download	downit.html#download,Downloader,string,string,string,ProgressChangedProc[Future[void]]	proc download(self: var Downloader; url, path: string; name = ""; replace = false;\n         onProgressChanged: ProgressChangedProc[Future[void]] = nil)		141
+nim	requestImpl	downit.html#requestImpl,string,Proxy	proc requestImpl(url: string; proxy: Proxy): Future[AsyncResponse]		150
+nim	request	downit.html#request,Downloader,string,string	proc request(self: var Downloader; url: string; name = "")		156
+nim	downloadAgain	downit.html#downloadAgain,Downloader,string	proc downloadAgain(self: var Downloader; name: string)		161
+nim	requestAgain	downit.html#requestAgain,Downloader,string	proc requestAgain(self: var Downloader; name: string)		166
+nim	update	downit.html#update,Downloader	proc update(self: var Downloader)		171

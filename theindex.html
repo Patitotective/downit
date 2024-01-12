@@ -12,10 +12,10 @@
 <link rel="icon" type="image/png" sizes="32x32" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA3XAAAN1wFCKJt4AAAAB3RJTUUH4QQQEwksSS9ZWwAAAk1JREFUWMPtll2ITVEUx39nn/O7Y5qR8f05wtCUUr6ZIS++8pEnkZInPImneaCQ5METNdOkeFBKUhMPRIkHKfEuUZSUlGlKPN2TrgfncpvmnntnmlEyq1Z7t89/rf9a6+y99oZxGZf/XeIq61EdtgKXgdXA0xrYAvBjOIF1AI9zvjcC74BSpndrJPkBWDScTF8Aa4E3wDlgHbASaANmVqlcCnwHvgDvgVfAJ+AikAAvgfVZwLnSVZHZaOuKoQi3ZOMi4NkYkpe1p4J7A8BpYAD49hfIy/oqG0+hLomiKP2L5L+1ubn5115S+3OAn4EnwBlgMzCjyt6ZAnQCJ4A7wOs88iRJHvw50HoujuPBoCKwHWiosy8MdfZnAdcHk8dxXFJ3VQbQlCTJvRBCGdRbD4M6uc5glpY3eAihpN5S5w12diSEcCCEcKUO4ljdr15T76ur1FDDLIQQ3qv71EdDOe3Kxj3leRXyk+pxdWnFWod6Wt2bY3de3aSuUHcPBVimHs7mK9WrmeOF6lR1o9qnzskh2ar2qm1qizpfXaPeVGdlmGN5pb09qMxz1Xb1kLqgzn1RyH7JUXW52lr5e/Kqi9qpto7V1atuUzfnARrV7jEib1T76gG2qxdGmXyiekkt1GswPTtek0aBfJp6YySGBfWg2tPQ0FAYgf1stUfdmdcjarbYJEniKIq6gY/Aw+zWHAC+p2labGpqiorFYgGYCEzN7oQdQClN07O1/EfDyGgC0ALMBdYAi4FyK+4H3gLPsxfR1zRNi+NP7nH5J+QntnXe5B5mpfQAAAAASUVORK5CYII=">
 
 <!-- CSS -->
-<link rel="stylesheet" type="text/css" href="nimdoc.out.css">
+<link rel="stylesheet" type="text/css" href="nimdoc.out.css?v=2.0.2">
 
 <!-- JS -->
-<script type="text/javascript" src="dochack.js"></script>
+<script type="text/javascript" src="dochack.js?v=2.0.2"></script>
 </head>
 <body>
   <div class="document" id="documentId">
@@ -28,7 +28,9 @@
           </ul></dd>
 <dt><a name="download" href="#download"><span>download:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="downit: proc download(self: var Downloader; url, path: string; name = &quot;&quot;; replace = false)" href="downit.html#download%2CDownloader%2Cstring%2Cstring%2Cstring">downit: proc download(self: var Downloader; url, path: string; name = &quot;&quot;; replace = false)</a></li>
+          data-doc-search-tag="downit: proc download(self: var Downloader; url, path: string; name = &quot;&quot;; replace = false;
+         onProgressChanged: ProgressChangedProc[Future[void]] = nil)" href="downit.html#download%2CDownloader%2Cstring%2Cstring%2Cstring%2CProgressChangedProc%5BFuture%5Bvoid%5D%5D">downit: proc download(self: var Downloader; url, path: string; name = &quot;&quot;; replace = false;
+         onProgressChanged: ProgressChangedProc[Future[void]] = nil)</a></li>
           </ul></dd>
 <dt><a name="downloadAgain" href="#downloadAgain"><span>downloadAgain:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -48,7 +50,11 @@
           </ul></dd>
 <dt><a name="downloadImpl" href="#downloadImpl"><span>downloadImpl:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="downit: proc downloadImpl(url, path: string): Future[void]" href="downit.html#downloadImpl%2Cstring%2Cstring">downit: proc downloadImpl(url, path: string): Future[void]</a></li>
+          data-doc-search-tag="downit: proc downloadImpl(url, path: string; proxy: Proxy;
+             onProgressChanged: ProgressChangedProc[Future[void]] = nil): Future[
+    void]" href="downit.html#downloadImpl%2Cstring%2Cstring%2CProxy%2CProgressChangedProc%5BFuture%5Bvoid%5D%5D">downit: proc downloadImpl(url, path: string; proxy: Proxy;
+             onProgressChanged: ProgressChangedProc[Future[void]] = nil): Future[
+    void]</a></li>
           </ul></dd>
 <dt><a name="Downloading" href="#Downloading"><span>Downloading:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -57,6 +63,10 @@
 <dt><a name="DownloadState" href="#DownloadState"><span>DownloadState:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="downit: enum DownloadState" href="downit.html#DownloadState">downit: enum DownloadState</a></li>
+          </ul></dd>
+<dt><a name="downTable" href="#downTable"><span>downTable:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="downit: proc downTable(self: Downloader): Table[string, Download]" href="downit.html#downTable%2CDownloader">downit: proc downTable(self: Downloader): Table[string, Download]</a></li>
           </ul></dd>
 <dt><a name="exists" href="#exists"><span>exists:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -100,7 +110,7 @@
           </ul></dd>
 <dt><a name="initDownloader" href="#initDownloader"><span>initDownloader:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="downit: proc initDownloader(dir: string; timeout = 1): Downloader" href="downit.html#initDownloader%2Cstring%2Cint">downit: proc initDownloader(dir: string; timeout = 1): Downloader</a></li>
+          data-doc-search-tag="downit: proc initDownloader(dir: string; timeout = 1; proxy, proxyUser, proxyPassword = &quot;&quot;): Downloader" href="downit.html#initDownloader%2Cstring%2Cint%2Cstring%2Cstring%2Cstring">downit: proc initDownloader(dir: string; timeout = 1; proxy, proxyUser, proxyPassword = &quot;&quot;): Downloader</a></li>
           </ul></dd>
 <dt><a name="isDownload" href="#isDownload"><span>isDownload:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -114,6 +124,10 @@
 <li><a class="reference external"
           data-doc-search-tag="downit: proc remove(self: var Downloader; name: string)" href="downit.html#remove%2CDownloader%2Cstring">downit: proc remove(self: var Downloader; name: string)</a></li>
           </ul></dd>
+<dt><a name="removeProxy" href="#removeProxy"><span>removeProxy:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="downit: proc removeProxy(self: var Downloader)" href="downit.html#removeProxy%2CDownloader">downit: proc removeProxy(self: var Downloader)</a></li>
+          </ul></dd>
 <dt><a name="request" href="#request"><span>request:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="downit: proc request(self: var Downloader; url: string; name = &quot;&quot;)" href="downit.html#request%2CDownloader%2Cstring%2Cstring">downit: proc request(self: var Downloader; url: string; name = &quot;&quot;)</a></li>
@@ -124,11 +138,15 @@
           </ul></dd>
 <dt><a name="requestImpl" href="#requestImpl"><span>requestImpl:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="downit: proc requestImpl(url: string): Future[AsyncResponse]" href="downit.html#requestImpl%2Cstring">downit: proc requestImpl(url: string): Future[AsyncResponse]</a></li>
+          data-doc-search-tag="downit: proc requestImpl(url: string; proxy: Proxy): Future[AsyncResponse]" href="downit.html#requestImpl%2Cstring%2CProxy">downit: proc requestImpl(url: string; proxy: Proxy): Future[AsyncResponse]</a></li>
           </ul></dd>
 <dt><a name="running" href="#running"><span>running:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="downit: proc running(self: Downloader; name: string): bool" href="downit.html#running%2CDownloader%2Cstring">downit: proc running(self: Downloader; name: string): bool</a></li>
+          </ul></dd>
+<dt><a name="setProxy" href="#setProxy"><span>setProxy:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="downit: proc setProxy(self: var Downloader; proxy: string; proxyUser, proxyPassword = &quot;&quot;)" href="downit.html#setProxy%2CDownloader%2Cstring%2Cstring%2Cstring">downit: proc setProxy(self: var Downloader; proxy: string; proxyUser, proxyPassword = &quot;&quot;)</a></li>
           </ul></dd>
 <dt><a name="succeed" href="#succeed"><span>succeed:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -142,7 +160,7 @@
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2023-10-23 23:06:15 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2024-01-12 00:35:00 UTC</small>
       </div>
     </div>
   </div>
